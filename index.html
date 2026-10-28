@@ -1,92 +1,146 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0B0E11">
+<meta name="theme-color" content="#0A0D12">
 <title>Trade Journal</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
-:root{--bg:#0B0E11;--panel:#151A21;--line:#232B35;--tx:#EAECEF;--mute:#848E9C;--up:#0ECB81;--dn:#F6465D;--acc:#F0B90B}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.4 system-ui,sans-serif;padding:env(safe-area-inset-top) 0 72px}
-.num{font-family:ui-monospace,Menlo,Consolas,monospace}
+:root{--bg:#0A0D12;--s1:#11161D;--s2:#171D26;--ln:#1F2733;--tx:#F2F4F7;--mu:#7D8896;--up:#16C784;--dn:#EA3943;--acc:#F0B90B}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,sans-serif;font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+.num,.big{font-family:ui-monospace,Menlo,Consolas,monospace}
 .up{color:var(--up)}.dn{color:var(--dn)}
-header{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
-header h1{font-size:15px;margin:0 auto 0 0;color:var(--acc);letter-spacing:.3px}
-select,input,textarea,button{font:inherit;color:var(--tx);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:9px}
-button{cursor:pointer}
-button.p{background:var(--acc);color:#0B0E11;border-color:var(--acc);font-weight:700}
-button.d{color:var(--dn)}
-section{display:none;padding:12px}section.on{display:block}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.k{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:9px 10px;display:flex;flex-direction:column;gap:2px}
-.k span{color:var(--mute);font-size:12px}.k b{font-size:16px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:10px;margin:8px 0}
-.card h2{font-size:13px;color:var(--mute);margin:0 0 8px;font-weight:600}
-#chart{width:100%;height:200px;display:block}
-.row{display:flex;justify-content:space-between;gap:8px;padding:10px;border-bottom:1px solid var(--line);background:var(--panel)}
-.row small{display:block;color:var(--mute);font-size:12px}
+#app{max-width:560px;margin:0 auto;padding:env(safe-area-inset-top) 0 96px}
+header{display:flex;align-items:center;gap:10px;padding:14px 18px 6px}
+header .hi{margin-right:auto}header small{display:block;color:var(--mu);font-size:12px}header b{font-size:17px}
+select,input,textarea,button{font:inherit;font-size:16px;color:var(--tx);background:var(--s1);border:1px solid var(--ln);border-radius:12px;padding:11px 12px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:#3a4658}
+header select{padding:8px 10px;font-size:14px;border-radius:20px}
+header button{width:36px;height:36px;padding:0;border-radius:50%;font-size:20px;line-height:1}
+section{display:none;padding:10px 18px;animation:f .25s}section.on{display:block}
+@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+.card{background:var(--s1);border:1px solid var(--ln);border-radius:18px;padding:16px;margin-bottom:14px}
+.hero .lab{color:var(--mu);font-size:13px}
+.big{font-size:36px;font-weight:600;letter-spacing:-1px;margin:2px 0}
+.chg{display:flex;gap:8px;align-items:center;font-size:14px}.chg em{font-style:normal;font-size:12px;padding:2px 8px;border-radius:20px;background:var(--s2)}
+.chips{display:flex;gap:6px;margin:14px 0 6px}
+.chips button{padding:5px 14px;border-radius:20px;font-size:13px;color:var(--mu);background:none;border-color:transparent}
+.chips button.on{background:var(--s2);color:var(--tx);border-color:var(--ln)}
+#chart{width:100%;height:170px;display:block}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.tile{background:var(--s1);border:1px solid var(--ln);border-radius:16px;padding:12px}
+.tile span{display:block;color:var(--mu);font-size:12px}.tile b{font-size:17px}
+.card h2{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--mu);margin:0 0 6px;font-weight:600}
+.kv{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--ln)}.kv:last-child{border:0}.kv span{color:var(--mu)}
+.dh{display:flex;justify-content:space-between;color:var(--mu);font-size:13px;padding:14px 4px 6px;text-transform:capitalize}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--s1);border:1px solid var(--ln);border-radius:16px;margin-bottom:8px}
+.av{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:18px;background:var(--s2)}
+.av.up{background:rgba(22,199,132,.12)}.av.dn{background:rgba(234,57,67,.12)}
+.row .m{flex:1;min-width:0}.row .m small,.row .r small{display:block;color:var(--mu);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row .r{text-align:right}
-.tag{font-style:normal;font-size:11px;padding:1px 5px;border-radius:2px;border:1px solid currentColor}
-.empty{color:var(--mute);text-align:center;padding:28px 8px}
-.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-label{display:flex;flex-direction:column;gap:3px;color:var(--mute);font-size:12px}
-label input,label select,label textarea{width:100%;color:var(--tx);font-size:15px}
-.full{grid-column:1/-1}
-.bar{display:flex;gap:8px;margin-top:12px}.bar button{flex:1}
-.more button{display:block;width:100%;text-align:left;margin:6px 0;padding:12px}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;border:0;border-radius:0;background:none;color:var(--mute);padding:14px 4px}
-nav button.on{color:var(--acc);box-shadow:inset 0 2px var(--acc)}
+.empty{color:var(--mu);text-align:center;padding:40px 12px}
+#fsym{width:100%;margin-bottom:4px}
+h1.t{font-size:22px;margin:6px 0 14px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}
+label{display:flex;flex-direction:column;gap:5px;color:var(--mu);font-size:12px}
+label input,label select,label textarea{width:100%;background:var(--s2)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--s2);padding:4px;border-radius:14px}
+.seg button{border:0;background:none;color:var(--mu);padding:10px}
+.seg button.on.b{background:rgba(22,199,132,.18);color:var(--up)}.seg button.on.s{background:rgba(234,57,67,.18);color:var(--dn)}
+.emos{display:flex;flex-wrap:wrap;gap:6px}.emos button{padding:6px 12px;border-radius:20px;font-size:13px;background:var(--s2);color:var(--mu)}
+.emos button.on{color:#0A0D12;background:var(--acc);border-color:var(--acc)}
+.btn{width:100%;padding:14px;border-radius:14px;background:var(--acc);color:#0A0D12;border-color:var(--acc);font-weight:700}
+.btn.d{background:none;color:var(--dn);border-color:var(--ln);margin-top:8px}
+.set button{display:flex;justify-content:space-between;width:100%;text-align:left;margin-bottom:8px;padding:14px;border-radius:14px}
+.set button i{color:var(--mu);font-style:normal}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;background:rgba(10,13,18,.92);backdrop-filter:blur(14px);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
+nav div{display:flex;width:100%;max-width:560px}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;border-radius:0;color:var(--mu);font-size:11px;padding:10px 4px}
+nav button.on{color:var(--acc)}
+nav button.add svg{background:var(--acc);color:#0A0D12;border-radius:50%;padding:7px;width:34px;height:34px;margin-top:-14px;box-shadow:0 4px 14px rgba(240,185,11,.35)}
+.lock{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center}
+.mark{width:64px;height:64px;border-radius:18px;background:var(--s1);border:1px solid var(--ln);display:grid;place-items:center;color:var(--acc);font-weight:800;font-size:22px;margin-bottom:6px}
+.lock h2{margin:0;font-size:22px}.lock p{margin:0;color:var(--mu);max-width:280px}.lock p.err{color:var(--dn)}
+.lock input{width:100%;max-width:300px;text-align:center}.lock .btn{max-width:300px}
+.dots{display:flex;gap:16px;margin:14px 0}.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--mu)}.dots i.f{background:var(--acc);border-color:var(--acc)}
+.pad{display:grid;grid-template-columns:repeat(3,76px);gap:14px}.pad button{height:76px;border-radius:50%;font-size:26px;padding:0}.pad span{display:block}
+.lock a{color:var(--mu);font-size:14px;margin-top:10px;text-decoration:underline;cursor:pointer}
 </style></head><body>
-<header><h1>Trade Journal</h1><select id="acc"></select><button id="addacc" title="Nouveau compte">+</button></header>
+<div id="lock" class="lock"></div>
+<div id="app" hidden>
+<header><div class="hi"><small>Bonjour,</small><b id="hello"></b></div><select id="acc"></select><button id="addacc" aria-label="Nouveau compte">+</button></header>
 
 <section id="dash" class="on">
- <div class="kpis" id="kpis"></div>
- <div class="card"><h2>Courbe de capital</h2><canvas id="chart"></canvas></div>
- <div class="kpis" id="kpis2"></div>
+ <div class="card hero">
+  <div class="lab">Solde du compte</div><div class="big" id="bal"></div><div class="chg" id="chg"></div>
+  <div class="chips" id="per"><button data-p="0" class="on">Tout</button><button data-p="30">30 j</button><button data-p="7">7 j</button></div>
+  <canvas id="chart"></canvas>
+ </div>
+ <div class="tiles" id="tiles"></div>
+ <div class="card"><h2>Détails</h2><div id="det"></div></div>
 </section>
 
-<section id="list">
- <select id="fsym" style="width:100%;margin-bottom:8px"></select>
- <div id="rows"></div>
-</section>
+<section id="list"><select id="fsym"></select><div id="rows"></div></section>
 
 <section id="form">
- <form id="f" class="g">
-  <label class="full">Date et heure<input id="dt" type="datetime-local" required></label>
-  <label>Actif<input id="sym" list="syms" required autocapitalize="characters" placeholder="EURUSD"></label>
-  <datalist id="syms"></datalist>
-  <label>Sens<select id="side"><option value="BUY">Achat</option><option value="SELL">Vente</option></select></label>
-  <label>Taille (lot)<input id="lot" type="number" step="any"></label>
-  <label>Prix d’entrée<input id="entry" type="number" step="any"></label>
-  <label>Prix de sortie<input id="exit" type="number" step="any"></label>
-  <label>Stop loss<input id="sl" type="number" step="any"></label>
-  <label>Take profit<input id="tp" type="number" step="any"></label>
-  <label>Frais<input id="fees" type="number" step="any"></label>
-  <label class="full">Résultat net (P&amp;L, en devise du compte)<input id="pnl" type="number" step="any" placeholder="ex : 40 ou -25.5 ; vide = trade ouvert"></label>
-  <label>Stratégie<input id="strat"></label>
-  <label>Émotion<select id="emo"><option value="">–</option><option>Calme</option><option>Confiant</option><option>Hésitant</option><option>Stressé</option><option>Impatient</option><option>Revanche</option></select></label>
-  <label class="full">Notes et erreurs<textarea id="notes" rows="3"></textarea></label>
-  <div class="bar full"><button type="button" id="del" class="d" hidden>Supprimer</button><button class="p" type="submit">Enregistrer le trade</button></div>
+ <h1 class="t" id="ftitle">Nouveau trade</h1>
+ <form id="f">
+  <div class="card g">
+   <label class="full">Date et heure<input id="dt" type="datetime-local" required></label>
+   <label>Actif<input id="sym" list="syms" required autocapitalize="characters" placeholder="EURUSD"></label>
+   <datalist id="syms"></datalist>
+   <label>Taille (lot)<input id="lot" type="number" step="any"></label>
+   <div class="seg full" id="seg"><button type="button" class="b" data-v="BUY">Achat</button><button type="button" class="s" data-v="SELL">Vente</button></div>
+  </div>
+  <div class="card g"><h2 class="full">Exécution et risque</h2>
+   <label>Prix d’entrée<input id="entry" type="number" step="any"></label>
+   <label>Prix de sortie<input id="exit" type="number" step="any"></label>
+   <label>Stop loss<input id="sl" type="number" step="any"></label>
+   <label>Take profit<input id="tp" type="number" step="any"></label>
+  </div>
+  <div class="card g"><h2 class="full">Résultat</h2>
+   <label>Frais<input id="fees" type="number" step="any"></label>
+   <label>P&amp;L net<input id="pnl" type="number" step="any" placeholder="vide = ouvert"></label>
+  </div>
+  <div class="card g"><h2 class="full">Journal</h2>
+   <label class="full">Stratégie<input id="strat"></label>
+   <div class="full emos" id="emos"></div>
+   <label class="full">Notes et erreurs<textarea id="notes" rows="3"></textarea></label>
+  </div>
+  <button class="btn" type="submit">Enregistrer le trade</button>
+  <button class="btn d" type="button" id="del" hidden>Supprimer ce trade</button>
  </form>
 </section>
 
-<section id="more" class="more">
- <button id="capital">Modifier le capital de départ</button>
- <button id="csv">Exporter les trades (CSV)</button>
- <button id="bak">Sauvegarder (fichier JSON)</button>
- <button id="imp">Restaurer une sauvegarde</button>
+<section id="more" class="set">
+ <h1 class="t">Réglages</h1>
+ <div class="card"><h2>Accès</h2></div>
+ <button id="lockNow">Verrouiller maintenant<i>›</i></button>
+ <button id="chpin">Changer le code PIN<i>›</i></button>
+ <button id="chid">Modifier l’identifiant<i>›</i></button>
+ <div class="card" style="margin-top:14px"><h2>Compte et données</h2></div>
+ <button id="capital">Capital de départ<i>›</i></button>
+ <button id="csv">Exporter les trades (CSV)<i>›</i></button>
+ <button id="bak">Sauvegarder (fichier JSON)<i>›</i></button>
+ <button id="imp">Restaurer une sauvegarde<i>›</i></button>
  <input id="file" type="file" accept=".json,application/json" hidden>
  <p class="empty">Les données restent sur ce téléphone. Fais une sauvegarde régulièrement.</p>
 </section>
 
-<nav><button data-t="dash" class="on">Tableau</button><button data-t="list">Trades</button><button data-t="form">+ Trade</button><button data-t="more">Plus</button></nav>
+<nav><div>
+ <button data-t="dash" class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21H3z"/></svg>Accueil</button>
+ <button data-t="list"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Trades</button>
+ <button data-t="form" class="add"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Ajouter</button>
+ <button data-t="more"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>Réglages</button>
+</div></nav>
+</div>
 
 <script>
-const $=s=>document.querySelector(s),KEY='tj_v1';
-let db=load(),editId=null;
+const $=s=>document.querySelector(s),KEY='tj_v1',EMO=['Calme','Confiant','Hésitant','Stressé','Impatient','Revanche'];
+let db=load(),editId=null,per=0,hid=0;
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.accounts&&d.accounts.length&&d.trades)return d}catch(e){}
  return{accounts:[{id:1,name:'Compte démo',initial:10000}],trades:[],acc:1}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){alert('Sauvegarde impossible : le stockage du navigateur est indisponible.')}}
@@ -97,50 +151,96 @@ const cls=n=>n>0?'up':n<0?'dn':'';
 const cur=()=>db.accounts.find(a=>a.id===db.acc)||db.accounts[0];
 const rows=()=>db.trades.filter(t=>t.acc===cur().id);
 const N=id=>{const v=parseFloat($(id).value);return isNaN(v)?undefined:v};
+const tz=()=>new Date().getTimezoneOffset()*6e4;
 function rMult(t){const{entry:e,exit:x,sl:s}=t;if(![e,x,s].every(v=>typeof v==='number'))return null;const r=Math.abs(e-s);return r?(t.side==='BUY'?x-e:e-x)/r:null}
 
-function stats(){
- const a=cur(),cl=rows().filter(t=>typeof t.pnl==='number').sort((p,q)=>p.dt.localeCompare(q.dt));
- let eq=a.initial,peak=eq,mdd=0,mddp=0,ws=0,ls=0,bw=0,bl=0;const pts=[eq];
+/* ---------- Verrouillage ---------- */
+const A=()=>{try{return JSON.parse(localStorage.getItem('tj_auth'))}catch(e){return null}};
+async function hash(pin,salt){const s='tj|'+salt+'|'+pin;
+ if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+ let h=5381;for(const c of s)h=(h*33^c.charCodeAt(0))>>>0;return''+h}
+let L={mode:'',pin:'',tmp:'',id:'',msg:''};
+function showLock(mode){$('#app').hidden=true;$('#lock').hidden=false;L={mode:mode||(A()?'login':'id'),pin:'',tmp:'',id:A()?A().id:'',msg:''};drawLock()}
+function drawLock(){
+ const a=A(),m=L.mode;let h='<div class="mark">TJ</div>';
+ if(m==='id')h+='<h2>Bienvenue</h2><p>Choisis ton identifiant pour créer ton accès privé.</p><input id="lid" placeholder="Identifiant" maxlength="24" autocomplete="off"><button class="btn" id="lgo">Continuer</button>';
+ else{const T={login:'Bonjour, '+esc(a&&a.id),old:'Code actuel',setup:'Crée ton code PIN',confirm:'Confirme ton code PIN'}[m],
+  D={login:'Entre ton code PIN pour ouvrir le journal.',old:'Entre ton code actuel.',setup:'4 chiffres.',confirm:'Saisis-le une seconde fois.'}[m];
+  h+=`<h2>${T}</h2><p class="${L.msg?'err':''}">${L.msg||D}</p><div class="dots">${[0,1,2,3].map(i=>`<i class="${i<L.pin.length?'f':''}"></i>`).join('')}</div><div class="pad">${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>k===''?'<span></span>':`<button data-k="${k}">${k}</button>`).join('')}</div>`;
+  if(m==='login')h+='<a id="forgot">Code oublié ?</a>';else if(a)h+='<a id="lcancel">Annuler</a>'}
+ $('#lock').innerHTML=h}
+function lockedFor(){const k=JSON.parse(localStorage.getItem('tj_lk')||'{"n":0,"u":0}');return Math.ceil((k.u-Date.now())/1000)}
+function fail(){const k=JSON.parse(localStorage.getItem('tj_lk')||'{"n":0,"u":0}');k.n++;if(k.n%5===0)k.u=Date.now()+30000*Math.pow(2,k.n/5-1);localStorage.setItem('tj_lk',JSON.stringify(k));
+ L.pin='';L.msg=k.n%5===0?'Trop d’essais. Réessaie dans '+lockedFor()+' s.':'Code incorrect.';drawLock()}
+async function verify(){const a=A(),w=lockedFor();if(w>0){L.pin='';L.msg='Réessaie dans '+w+' s.';return drawLock()}
+ if(await hash(L.pin,a.salt)===a.hash){localStorage.removeItem('tj_lk');return true}fail();return false}
+async function key(k){L.msg='';if(k==='⌫')L.pin=L.pin.slice(0,-1);else if(L.pin.length<4)L.pin+=k;drawLock();if(L.pin.length<4)return;
+ const m=L.mode;
+ if(m==='login'){if(await verify())unlock()}
+ else if(m==='old'){if(await verify()){L.mode='setup';L.pin='';drawLock()}}
+ else if(m==='setup'){L.tmp=L.pin;L.pin='';L.mode='confirm';drawLock()}
+ else if(m==='confirm'){if(L.pin===L.tmp){const salt=Math.random().toString(36).slice(2);
+   localStorage.setItem('tj_auth',JSON.stringify({id:L.id,salt,hash:await hash(L.pin,salt)}));unlock()}
+  else{L.pin='';L.tmp='';L.mode='setup';L.msg='Les codes diffèrent. Recommence.';drawLock()}}}
+function unlock(){$('#lock').hidden=true;$('#app').hidden=false;$('#hello').textContent=A().id;refresh()}
+$('#lock').onclick=e=>{const b=e.target.closest('[data-k]');if(b)return key(b.dataset.k);
+ if(e.target.id==='lgo'){const v=$('#lid').value.trim();if(!v)return;L.id=v;L.mode='setup';drawLock()}
+ if(e.target.id==='lcancel')unlock();
+ if(e.target.id==='forgot'&&confirm('Réinitialiser efface le journal de ce téléphone (tu pourras restaurer une sauvegarde). Continuer ?')){['tj_v1','tj_auth','tj_lk'].forEach(k=>localStorage.removeItem(k));location.reload()}};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hid=Date.now();else if(A()&&!$('#app').hidden&&Date.now()-hid>30000)showLock()});
+
+/* ---------- Statistiques ---------- */
+function stats(days){
+ const a=cur(),all=rows().filter(t=>typeof t.pnl==='number').sort((p,q)=>p.dt.localeCompare(q.dt)),
+  lim=days?new Date(Date.now()-days*864e5-tz()).toISOString().slice(0,16):'',
+  bal=a.initial+all.reduce((s,t)=>s+t.pnl,0),cl=all.filter(t=>t.dt>=lim),base=a.initial+all.filter(t=>t.dt<lim).reduce((s,t)=>s+t.pnl,0);
+ let eq=base,peak=eq,mdd=0,mddp=0,ws=0,ls=0,bw=0,bl=0;const pts=[eq];
  cl.forEach(t=>{eq+=t.pnl;pts.push(eq);if(eq>peak)peak=eq;const d=peak-eq;if(d>mdd){mdd=d;mddp=peak?d/peak*100:0}
   if(t.pnl>0){ws++;ls=0;bw=Math.max(bw,ws)}else if(t.pnl<0){ls++;ws=0;bl=Math.max(bl,ls)}else{ws=0;ls=0}});
- const w=cl.filter(t=>t.pnl>0),l=cl.filter(t=>t.pnl<0),gw=w.reduce((s,t)=>s+t.pnl,0),gl=-l.reduce((s,t)=>s+t.pnl,0),n=cl.length,tot=eq-a.initial;
- return{n,tot,eq,pts,init:a.initial,wr:n?w.length/n*100:0,pf:gl?gw/gl:(gw?Infinity:0),aw:w.length?gw/w.length:0,al:l.length?-gl/l.length:0,ex:n?tot/n:0,best:n?Math.max(...cl.map(t=>t.pnl)):0,worst:n?Math.min(...cl.map(t=>t.pnl)):0,mdd,mddp,bw,bl,open:rows().length-n}}
+ const w=cl.filter(t=>t.pnl>0),l=cl.filter(t=>t.pnl<0),gw=w.reduce((s,t)=>s+t.pnl,0),gl=-l.reduce((s,t)=>s+t.pnl,0),n=cl.length,tot=eq-base;
+ return{n,tot,bal,base,pts,wr:n?w.length/n*100:0,pf:gl?gw/gl:(gw?Infinity:0),aw:w.length?gw/w.length:0,al:l.length?-gl/l.length:0,ex:n?tot/n:0,best:n?Math.max(...cl.map(t=>t.pnl)):0,worst:n?Math.min(...cl.map(t=>t.pnl)):0,mdd,mddp,bw,bl,open:rows().length-rows().filter(t=>typeof t.pnl==='number').length}}
 
 function draw(pts,base){
  const c=$('#chart'),r=window.devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight;if(!W)return;
  c.width=W*r;c.height=H*r;const g=c.getContext('2d');g.scale(r,r);g.clearRect(0,0,W,H);
- if(pts.length<2){g.fillStyle='#848E9C';g.font='13px system-ui';g.fillText('Ajoute un trade clôturé pour voir la courbe.',10,H/2);return}
- const mn=Math.min(...pts,base),mx=Math.max(...pts,base),pad=(mx-mn||1)*.1,lo=mn-pad,hi=mx+pad,
-  X=i=>8+i*(W-16)/(pts.length-1),Y=v=>H-8-(v-lo)/(hi-lo)*(H-16);
- g.strokeStyle='#232B35';g.setLineDash([4,4]);g.beginPath();g.moveTo(0,Y(base));g.lineTo(W,Y(base));g.stroke();g.setLineDash([]);
- g.strokeStyle=pts[pts.length-1]>=base?'#0ECB81':'#F6465D';g.lineWidth=2;g.beginPath();
- pts.forEach((v,i)=>i?g.lineTo(X(i),Y(v)):g.moveTo(X(i),Y(v)));g.stroke()}
+ if(pts.length<2){g.fillStyle='#7D8896';g.font='13px system-ui';g.fillText('Ajoute un trade clôturé pour voir la courbe.',4,H/2);return}
+ const mn=Math.min(...pts,base),mx=Math.max(...pts,base),pad=(mx-mn||1)*.12,lo=mn-pad,hi=mx+pad,
+  X=i=>4+i*(W-8)/(pts.length-1),Y=v=>H-6-(v-lo)/(hi-lo)*(H-12),up=pts[pts.length-1]>=base,col=up?'22,199,132':'234,57,67';
+ g.strokeStyle='#1F2733';g.setLineDash([4,4]);g.beginPath();g.moveTo(0,Y(base));g.lineTo(W,Y(base));g.stroke();g.setLineDash([]);
+ g.beginPath();pts.forEach((v,i)=>i?g.lineTo(X(i),Y(v)):g.moveTo(X(i),Y(v)));
+ g.strokeStyle='rgb('+col+')';g.lineWidth=2.2;g.lineJoin='round';g.stroke();
+ g.lineTo(X(pts.length-1),H);g.lineTo(X(0),H);g.closePath();
+ const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'rgba('+col+',.28)');gr.addColorStop(1,'rgba('+col+',0)');g.fillStyle=gr;g.fill()}
 
 function renderDash(){
- const s=stats(),k=(l,v,c='')=>`<div class="k"><span>${l}</span><b class="num ${c}">${v}</b></div>`;
- $('#kpis').innerHTML=k('Solde',fm(s.eq))+k('P&amp;L total',money(s.tot),cls(s.tot))+k('Trades clôturés',s.n+(s.open?' (+'+s.open+' ouvert)':''))+k('Taux de réussite',s.wr.toFixed(1)+' %');
- $('#kpis2').innerHTML=k('Profit factor',s.pf===Infinity?'∞':s.pf.toFixed(2))+k('Espérance / trade',money(s.ex),cls(s.ex))+
-  k('Gain moyen',money(s.aw),'up')+k('Perte moyenne',money(s.al),'dn')+k('Meilleur trade',money(s.best),cls(s.best))+k('Pire trade',money(s.worst),cls(s.worst))+
-  k('Drawdown max',fm(s.mdd)+' ('+s.mddp.toFixed(1)+' %)','dn')+k('Séries max (G / P)',s.bw+' / '+s.bl);
- draw(s.pts,s.init)}
+ const s=stats(per),ch=s.base?s.tot/Math.abs(s.base)*100:0,
+  tile=(l,v,c='')=>`<div class="tile"><span>${l}</span><b class="num ${c}">${v}</b></div>`,
+  kv=(l,v,c='')=>`<div class="kv"><span>${l}</span><b class="num ${c}">${v}</b></div>`;
+ $('#bal').textContent=fm(s.bal);
+ $('#chg').innerHTML=`<span class="num ${cls(s.tot)}">${money(s.tot)}</span><em class="${cls(s.tot)}">${ch>=0?'+':'−'}${Math.abs(ch).toFixed(1)} %</em>`;
+ $('#tiles').innerHTML=tile('Réussite',s.wr.toFixed(0)+' %')+tile('Profit factor',s.pf===Infinity?'∞':s.pf.toFixed(2))+tile('Espérance',money(s.ex),cls(s.ex));
+ $('#det').innerHTML=kv('Trades clôturés',s.n+(s.open?' (+'+s.open+' ouvert'+(s.open>1?'s':'')+')':''))+kv('Gain moyen',money(s.aw),'up')+kv('Perte moyenne',money(s.al),'dn')+
+  kv('Meilleur trade',money(s.best),cls(s.best))+kv('Pire trade',money(s.worst),cls(s.worst))+kv('Drawdown max',fm(s.mdd)+' ('+s.mddp.toFixed(1)+' %)','dn')+kv('Séries max (G / P)',s.bw+' / '+s.bl);
+ document.querySelectorAll('#per button').forEach(b=>b.classList.toggle('on',+b.dataset.p===per));
+ draw(s.pts,s.base)}
 
 function renderList(){
  const f=$('#fsym').value,syms=[...new Set(rows().map(t=>t.sym))].sort();
  $('#fsym').innerHTML='<option value="">Tous les actifs</option>'+syms.map(s=>`<option ${s===f?'selected':''}>${esc(s)}</option>`).join('');
- const L=rows().filter(t=>!f||t.sym===f).sort((p,q)=>q.dt.localeCompare(p.dt));
- $('#rows').innerHTML=L.length?L.map(t=>{const r=rMult(t),c=t.side==='BUY'?'up':'dn';
-  return `<div class="row" data-id="${t.id}"><div><b>${esc(t.sym)}</b> <i class="tag ${c}">${t.side==='BUY'?'Achat':'Vente'}</i><small>${esc(t.dt.replace('T',' '))}${t.strat?' – '+esc(t.strat):''}</small></div>
-  <div class="num r"><b class="${cls(t.pnl)}">${typeof t.pnl==='number'?money(t.pnl):'ouvert'}</b><small>${r==null?'':r.toFixed(2)+' R'}</small></div></div>`}).join('')
-  :'<p class="empty">Aucun trade pour l’instant. Appuie sur « + Trade » pour en ajouter un.</p>'}
+ const L=rows().filter(t=>!f||t.sym===f).sort((p,q)=>q.dt.localeCompare(p.dt));let out='',d0='';
+ L.forEach(t=>{const d=t.dt.slice(0,10),r=rMult(t),b=t.side==='BUY';
+  if(d!==d0){d0=d;const day=L.filter(x=>x.dt.slice(0,10)===d&&typeof x.pnl==='number').reduce((s,x)=>s+x.pnl,0);
+   out+=`<div class="dh"><span>${new Date(d+'T12:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</span><b class="num ${cls(day)}">${money(day)}</b></div>`}
+  out+=`<div class="row" data-id="${t.id}"><div class="av ${b?'up':'dn'}">${b?'↗':'↘'}</div><div class="m"><b>${esc(t.sym)}</b><small>${esc(t.dt.slice(11))}${t.strat?' · '+esc(t.strat):''}</small></div>
+  <div class="r num"><b class="${cls(t.pnl)}">${typeof t.pnl==='number'?money(t.pnl):'ouvert'}</b><small>${r==null?'':r.toFixed(2)+' R'}</small></div></div>`});
+ $('#rows').innerHTML=out||'<p class="empty">Aucun trade pour l’instant.<br>Touche « Ajouter » pour saisir le premier.</p>'}
 
+function setSide(v){$('#seg').dataset.v=v;document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
+function setEmo(v){$('#emos').dataset.v=v||'';document.querySelectorAll('#emos button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
 function openForm(t){
- editId=t?t.id:null;$('#f').reset();
- const now=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
- $('#dt').value=t?t.dt:now;
- if(t){$('#sym').value=t.sym;$('#side').value=t.side;
-  ['lot','entry','exit','sl','tp','fees','pnl'].forEach(k=>$('#'+k).value=t[k]==null?'':t[k]);
-  $('#strat').value=t.strat||'';$('#emo').value=t.emo||'';$('#notes').value=t.notes||''}
+ editId=t?t.id:null;$('#f').reset();$('#ftitle').textContent=t?'Modifier le trade':'Nouveau trade';
+ $('#dt').value=t?t.dt:new Date(Date.now()-tz()).toISOString().slice(0,16);setSide(t?t.side:'BUY');setEmo(t?t.emo:'');
+ if(t){$('#sym').value=t.sym;['lot','entry','exit','sl','tp','fees','pnl'].forEach(k=>$('#'+k).value=t[k]==null?'':t[k]);$('#strat').value=t.strat||'';$('#notes').value=t.notes||''}
  $('#del').hidden=!t;
  $('#syms').innerHTML=[...new Set(['EURUSD','GBPUSD','XAUUSD','BTCUSD',...db.trades.map(x=>x.sym)])].map(s=>`<option value="${esc(s)}">`).join('')}
 
@@ -148,21 +248,27 @@ function go(t){
  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===t));
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
  if(t==='dash')renderDash();if(t==='list')renderList();if(t==='form'&&editId===null)openForm(null);window.scrollTo(0,0)}
-function renderAcc(){$('#acc').innerHTML=db.accounts.map(a=>`<option value="${a.id}" ${a.id===cur().id?'selected':''}>${esc(a.name)}</option>`).join('')}
-function refresh(){renderAcc();const t=document.querySelector('section.on').id;go(t)}
+function refresh(){$('#acc').innerHTML=db.accounts.map(a=>`<option value="${a.id}" ${a.id===cur().id?'selected':''}>${esc(a.name)}</option>`).join('');go(document.querySelector('section.on').id)}
 
+$('#emos').innerHTML=EMO.map(e=>`<button type="button" data-v="${e}">${e}</button>`).join('');
+$('#emos').onclick=e=>{const b=e.target.closest('button');if(b)setEmo($('#emos').dataset.v===b.dataset.v?'':b.dataset.v)};
+$('#seg').onclick=e=>{const b=e.target.closest('button');if(b)setSide(b.dataset.v)};
+$('#per').onclick=e=>{const b=e.target.closest('button');if(b){per=+b.dataset.p;renderDash()}};
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.t==='form')editId=null;go(b.dataset.t)});
 $('#acc').onchange=e=>{db.acc=+e.target.value;save();refresh()};
 $('#fsym').onchange=renderList;
-$('#rows').onclick=e=>{const r=e.target.closest('.row');if(!r)return;const t=db.trades.find(x=>x.id===+r.dataset.id);openForm(t);go('form')};
+$('#rows').onclick=e=>{const r=e.target.closest('.row');if(!r)return;openForm(db.trades.find(x=>x.id===+r.dataset.id));go('form')};
 $('#addacc').onclick=()=>{const n=prompt('Nom du compte ?');if(!n)return;const c=parseFloat((prompt('Capital de départ ?','10000')||'').replace(',','.'));if(isNaN(c))return;
  const id=Date.now();db.accounts.push({id,name:n.trim(),initial:c});db.acc=id;save();refresh()};
 $('#capital').onclick=()=>{const c=parseFloat((prompt('Capital de départ de « '+cur().name+' » ?',cur().initial)||'').replace(',','.'));if(isNaN(c))return;cur().initial=c;save();alert('Capital mis à jour.')};
 $('#f').onsubmit=e=>{e.preventDefault();
- const t={id:editId||Date.now(),acc:cur().id,dt:$('#dt').value,sym:$('#sym').value.trim().toUpperCase(),side:$('#side').value,lot:N('#lot'),entry:N('#entry'),exit:N('#exit'),sl:N('#sl'),tp:N('#tp'),fees:N('#fees'),pnl:N('#pnl'),strat:$('#strat').value.trim(),emo:$('#emo').value,notes:$('#notes').value.trim()};
+ const t={id:editId||Date.now(),acc:cur().id,dt:$('#dt').value,sym:$('#sym').value.trim().toUpperCase(),side:$('#seg').dataset.v||'BUY',lot:N('#lot'),entry:N('#entry'),exit:N('#exit'),sl:N('#sl'),tp:N('#tp'),fees:N('#fees'),pnl:N('#pnl'),strat:$('#strat').value.trim(),emo:$('#emos').dataset.v||'',notes:$('#notes').value.trim()};
  if(!t.sym||!t.dt)return;
  db.trades=editId?db.trades.map(x=>x.id===editId?t:x):[...db.trades,t];save();editId=null;go('list')};
 $('#del').onclick=()=>{if(!confirm('Supprimer ce trade ?'))return;db.trades=db.trades.filter(x=>x.id!==editId);save();editId=null;go('list')};
+$('#lockNow').onclick=()=>showLock();
+$('#chpin').onclick=()=>showLock('old');
+$('#chid').onclick=()=>{const v=(prompt('Nouvel identifiant ?',A().id)||'').trim();if(!v)return;const a=A();a.id=v;localStorage.setItem('tj_auth',JSON.stringify(a));$('#hello').textContent=v};
 
 function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
 $('#csv').onclick=()=>{const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
@@ -175,7 +281,7 @@ $('#imp').onclick=()=>$('#file').click();
 $('#file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
  r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.accounts)||!d.accounts.length||!Array.isArray(d.trades))throw 0;
   if(!confirm('Remplacer le journal actuel par cette sauvegarde ?'))return;db=d;if(!db.acc)db.acc=db.accounts[0].id;save();refresh()}catch(x){alert('Fichier de sauvegarde invalide.')}};r.readAsText(f);e.target.value=''};
-window.addEventListener('resize',()=>{if($('#dash').classList.contains('on'))renderDash()});
-refresh();
+window.addEventListener('resize',()=>{if($('#dash').classList.contains('on')&&!$('#app').hidden)renderDash()});
+showLock();
 if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
