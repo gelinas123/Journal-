@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B0E11">
+<title>Trade Journal</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#0B0E11;--panel:#151A21;--line:#232B35;--tx:#EAECEF;--mute:#848E9C;--up:#0ECB81;--dn:#F6465D;--acc:#F0B90B}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.4 system-ui,sans-serif;padding:env(safe-area-inset-top) 0 72px}
+.num{font-family:ui-monospace,Menlo,Consolas,monospace}
+.up{color:var(--up)}.dn{color:var(--dn)}
+header{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+header h1{font-size:15px;margin:0 auto 0 0;color:var(--acc);letter-spacing:.3px}
+select,input,textarea,button{font:inherit;color:var(--tx);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:9px}
+button{cursor:pointer}
+button.p{background:var(--acc);color:#0B0E11;border-color:var(--acc);font-weight:700}
+button.d{color:var(--dn)}
+section{display:none;padding:12px}section.on{display:block}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.k{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:9px 10px;display:flex;flex-direction:column;gap:2px}
+.k span{color:var(--mute);font-size:12px}.k b{font-size:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:10px;margin:8px 0}
+.card h2{font-size:13px;color:var(--mute);margin:0 0 8px;font-weight:600}
+#chart{width:100%;height:200px;display:block}
+.row{display:flex;justify-content:space-between;gap:8px;padding:10px;border-bottom:1px solid var(--line);background:var(--panel)}
+.row small{display:block;color:var(--mute);font-size:12px}
+.row .r{text-align:right}
+.tag{font-style:normal;font-size:11px;padding:1px 5px;border-radius:2px;border:1px solid currentColor}
+.empty{color:var(--mute);text-align:center;padding:28px 8px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:flex;flex-direction:column;gap:3px;color:var(--mute);font-size:12px}
+label input,label select,label textarea{width:100%;color:var(--tx);font-size:15px}
+.full{grid-column:1/-1}
+.bar{display:flex;gap:8px;margin-top:12px}.bar button{flex:1}
+.more button{display:block;width:100%;text-align:left;margin:6px 0;padding:12px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;border-radius:0;background:none;color:var(--mute);padding:14px 4px}
+nav button.on{color:var(--acc);box-shadow:inset 0 2px var(--acc)}
+</style></head><body>
+<header><h1>Trade Journal</h1><select id="acc"></select><button id="addacc" title="Nouveau compte">+</button></header>
+
+<section id="dash" class="on">
+ <div class="kpis" id="kpis"></div>
+ <div class="card"><h2>Courbe de capital</h2><canvas id="chart"></canvas></div>
+ <div class="kpis" id="kpis2"></div>
+</section>
+
+<section id="list">
+ <select id="fsym" style="width:100%;margin-bottom:8px"></select>
+ <div id="rows"></div>
+</section>
+
+<section id="form">
+ <form id="f" class="g">
+  <label class="full">Date et heure<input id="dt" type="datetime-local" required></label>
+  <label>Actif<input id="sym" list="syms" required autocapitalize="characters" placeholder="EURUSD"></label>
+  <datalist id="syms"></datalist>
+  <label>Sens<select id="side"><option value="BUY">Achat</option><option value="SELL">Vente</option></select></label>
+  <label>Taille (lot)<input id="lot" type="number" step="any"></label>
+  <label>Prix d’entrée<input id="entry" type="number" step="any"></label>
+  <label>Prix de sortie<input id="exit" type="number" step="any"></label>
+  <label>Stop loss<input id="sl" type="number" step="any"></label>
+  <label>Take profit<input id="tp" type="number" step="any"></label>
+  <label>Frais<input id="fees" type="number" step="any"></label>
+  <label class="full">Résultat net (P&amp;L, en devise du compte)<input id="pnl" type="number" step="any" placeholder="ex : 40 ou -25.5 ; vide = trade ouvert"></label>
+  <label>Stratégie<input id="strat"></label>
+  <label>Émotion<select id="emo"><option value="">–</option><option>Calme</option><option>Confiant</option><option>Hésitant</option><option>Stressé</option><option>Impatient</option><option>Revanche</option></select></label>
+  <label class="full">Notes et erreurs<textarea id="notes" rows="3"></textarea></label>
+  <div class="bar full"><button type="button" id="del" class="d" hidden>Supprimer</button><button class="p" type="submit">Enregistrer le trade</button></div>
+ </form>
+</section>
+
+<section id="more" class="more">
+ <button id="capital">Modifier le capital de départ</button>
+ <button id="csv">Exporter les trades (CSV)</button>
+ <button id="bak">Sauvegarder (fichier JSON)</button>
+ <button id="imp">Restaurer une sauvegarde</button>
+ <input id="file" type="file" accept=".json,application/json" hidden>
+ <p class="empty">Les données restent sur ce téléphone. Fais une sauvegarde régulièrement.</p>
+</section>
+
+<nav><button data-t="dash" class="on">Tableau</button><button data-t="list">Trades</button><button data-t="form">+ Trade</button><button data-t="more">Plus</button></nav>
+
+<script>
+const $=s=>document.querySelector(s),KEY='tj_v1';
+let db=load(),editId=null;
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.accounts&&d.accounts.length&&d.trades)return d}catch(e){}
+ return{accounts:[{id:1,name:'Compte démo',initial:10000}],trades:[],acc:1}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){alert('Sauvegarde impossible : le stockage du navigateur est indisponible.')}}
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fm=n=>n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const money=n=>(n>0?'+':n<0?'−':'')+fm(Math.abs(n));
+const cls=n=>n>0?'up':n<0?'dn':'';
+const cur=()=>db.accounts.find(a=>a.id===db.acc)||db.accounts[0];
+const rows=()=>db.trades.filter(t=>t.acc===cur().id);
+const N=id=>{const v=parseFloat($(id).value);return isNaN(v)?undefined:v};
+function rMult(t){const{entry:e,exit:x,sl:s}=t;if(![e,x,s].every(v=>typeof v==='number'))return null;const r=Math.abs(e-s);return r?(t.side==='BUY'?x-e:e-x)/r:null}
+
+function stats(){
+ const a=cur(),cl=rows().filter(t=>typeof t.pnl==='number').sort((p,q)=>p.dt.localeCompare(q.dt));
+ let eq=a.initial,peak=eq,mdd=0,mddp=0,ws=0,ls=0,bw=0,bl=0;const pts=[eq];
+ cl.forEach(t=>{eq+=t.pnl;pts.push(eq);if(eq>peak)peak=eq;const d=peak-eq;if(d>mdd){mdd=d;mddp=peak?d/peak*100:0}
+  if(t.pnl>0){ws++;ls=0;bw=Math.max(bw,ws)}else if(t.pnl<0){ls++;ws=0;bl=Math.max(bl,ls)}else{ws=0;ls=0}});
+ const w=cl.filter(t=>t.pnl>0),l=cl.filter(t=>t.pnl<0),gw=w.reduce((s,t)=>s+t.pnl,0),gl=-l.reduce((s,t)=>s+t.pnl,0),n=cl.length,tot=eq-a.initial;
+ return{n,tot,eq,pts,init:a.initial,wr:n?w.length/n*100:0,pf:gl?gw/gl:(gw?Infinity:0),aw:w.length?gw/w.length:0,al:l.length?-gl/l.length:0,ex:n?tot/n:0,best:n?Math.max(...cl.map(t=>t.pnl)):0,worst:n?Math.min(...cl.map(t=>t.pnl)):0,mdd,mddp,bw,bl,open:rows().length-n}}
+
+function draw(pts,base){
+ const c=$('#chart'),r=window.devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight;if(!W)return;
+ c.width=W*r;c.height=H*r;const g=c.getContext('2d');g.scale(r,r);g.clearRect(0,0,W,H);
+ if(pts.length<2){g.fillStyle='#848E9C';g.font='13px system-ui';g.fillText('Ajoute un trade clôturé pour voir la courbe.',10,H/2);return}
+ const mn=Math.min(...pts,base),mx=Math.max(...pts,base),pad=(mx-mn||1)*.1,lo=mn-pad,hi=mx+pad,
+  X=i=>8+i*(W-16)/(pts.length-1),Y=v=>H-8-(v-lo)/(hi-lo)*(H-16);
+ g.strokeStyle='#232B35';g.setLineDash([4,4]);g.beginPath();g.moveTo(0,Y(base));g.lineTo(W,Y(base));g.stroke();g.setLineDash([]);
+ g.strokeStyle=pts[pts.length-1]>=base?'#0ECB81':'#F6465D';g.lineWidth=2;g.beginPath();
+ pts.forEach((v,i)=>i?g.lineTo(X(i),Y(v)):g.moveTo(X(i),Y(v)));g.stroke()}
+
+function renderDash(){
+ const s=stats(),k=(l,v,c='')=>`<div class="k"><span>${l}</span><b class="num ${c}">${v}</b></div>`;
+ $('#kpis').innerHTML=k('Solde',fm(s.eq))+k('P&amp;L total',money(s.tot),cls(s.tot))+k('Trades clôturés',s.n+(s.open?' (+'+s.open+' ouvert)':''))+k('Taux de réussite',s.wr.toFixed(1)+' %');
+ $('#kpis2').innerHTML=k('Profit factor',s.pf===Infinity?'∞':s.pf.toFixed(2))+k('Espérance / trade',money(s.ex),cls(s.ex))+
+  k('Gain moyen',money(s.aw),'up')+k('Perte moyenne',money(s.al),'dn')+k('Meilleur trade',money(s.best),cls(s.best))+k('Pire trade',money(s.worst),cls(s.worst))+
+  k('Drawdown max',fm(s.mdd)+' ('+s.mddp.toFixed(1)+' %)','dn')+k('Séries max (G / P)',s.bw+' / '+s.bl);
+ draw(s.pts,s.init)}
+
+function renderList(){
+ const f=$('#fsym').value,syms=[...new Set(rows().map(t=>t.sym))].sort();
+ $('#fsym').innerHTML='<option value="">Tous les actifs</option>'+syms.map(s=>`<option ${s===f?'selected':''}>${esc(s)}</option>`).join('');
+ const L=rows().filter(t=>!f||t.sym===f).sort((p,q)=>q.dt.localeCompare(p.dt));
+ $('#rows').innerHTML=L.length?L.map(t=>{const r=rMult(t),c=t.side==='BUY'?'up':'dn';
+  return `<div class="row" data-id="${t.id}"><div><b>${esc(t.sym)}</b> <i class="tag ${c}">${t.side==='BUY'?'Achat':'Vente'}</i><small>${esc(t.dt.replace('T',' '))}${t.strat?' – '+esc(t.strat):''}</small></div>
+  <div class="num r"><b class="${cls(t.pnl)}">${typeof t.pnl==='number'?money(t.pnl):'ouvert'}</b><small>${r==null?'':r.toFixed(2)+' R'}</small></div></div>`}).join('')
+  :'<p class="empty">Aucun trade pour l’instant. Appuie sur « + Trade » pour en ajouter un.</p>'}
+
+function openForm(t){
+ editId=t?t.id:null;$('#f').reset();
+ const now=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
+ $('#dt').value=t?t.dt:now;
+ if(t){$('#sym').value=t.sym;$('#side').value=t.side;
+  ['lot','entry','exit','sl','tp','fees','pnl'].forEach(k=>$('#'+k).value=t[k]==null?'':t[k]);
+  $('#strat').value=t.strat||'';$('#emo').value=t.emo||'';$('#notes').value=t.notes||''}
+ $('#del').hidden=!t;
+ $('#syms').innerHTML=[...new Set(['EURUSD','GBPUSD','XAUUSD','BTCUSD',...db.trades.map(x=>x.sym)])].map(s=>`<option value="${esc(s)}">`).join('')}
+
+function go(t){
+ document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===t));
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+ if(t==='dash')renderDash();if(t==='list')renderList();if(t==='form'&&editId===null)openForm(null);window.scrollTo(0,0)}
+function renderAcc(){$('#acc').innerHTML=db.accounts.map(a=>`<option value="${a.id}" ${a.id===cur().id?'selected':''}>${esc(a.name)}</option>`).join('')}
+function refresh(){renderAcc();const t=document.querySelector('section.on').id;go(t)}
+
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.t==='form')editId=null;go(b.dataset.t)});
+$('#acc').onchange=e=>{db.acc=+e.target.value;save();refresh()};
+$('#fsym').onchange=renderList;
+$('#rows').onclick=e=>{const r=e.target.closest('.row');if(!r)return;const t=db.trades.find(x=>x.id===+r.dataset.id);openForm(t);go('form')};
+$('#addacc').onclick=()=>{const n=prompt('Nom du compte ?');if(!n)return;const c=parseFloat((prompt('Capital de départ ?','10000')||'').replace(',','.'));if(isNaN(c))return;
+ const id=Date.now();db.accounts.push({id,name:n.trim(),initial:c});db.acc=id;save();refresh()};
+$('#capital').onclick=()=>{const c=parseFloat((prompt('Capital de départ de « '+cur().name+' » ?',cur().initial)||'').replace(',','.'));if(isNaN(c))return;cur().initial=c;save();alert('Capital mis à jour.')};
+$('#f').onsubmit=e=>{e.preventDefault();
+ const t={id:editId||Date.now(),acc:cur().id,dt:$('#dt').value,sym:$('#sym').value.trim().toUpperCase(),side:$('#side').value,lot:N('#lot'),entry:N('#entry'),exit:N('#exit'),sl:N('#sl'),tp:N('#tp'),fees:N('#fees'),pnl:N('#pnl'),strat:$('#strat').value.trim(),emo:$('#emo').value,notes:$('#notes').value.trim()};
+ if(!t.sym||!t.dt)return;
+ db.trades=editId?db.trades.map(x=>x.id===editId?t:x):[...db.trades,t];save();editId=null;go('list')};
+$('#del').onclick=()=>{if(!confirm('Supprimer ce trade ?'))return;db.trades=db.trades.filter(x=>x.id!==editId);save();editId=null;go('list')};
+
+function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
+$('#csv').onclick=()=>{const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+ const h=['date','compte','actif','sens','lot','entree','sortie','sl','tp','frais','pnl','r','strategie','emotion','notes'];
+ const L=db.trades.slice().sort((a,b)=>a.dt.localeCompare(b.dt)).map(t=>{const r=rMult(t),a=db.accounts.find(x=>x.id===t.acc);
+  return[t.dt,a?a.name:'',t.sym,t.side,t.lot,t.entry,t.exit,t.sl,t.tp,t.fees,t.pnl,r==null?'':r.toFixed(3),t.strat,t.emo,t.notes].map(q).join(',')});
+ dl('trades.csv','\ufeff'+[h.join(',')].concat(L).join('\n'),'text/csv')};
+$('#bak').onclick=()=>dl('journal-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(db),'application/json');
+$('#imp').onclick=()=>$('#file').click();
+$('#file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.accounts)||!d.accounts.length||!Array.isArray(d.trades))throw 0;
+  if(!confirm('Remplacer le journal actuel par cette sauvegarde ?'))return;db=d;if(!db.acc)db.acc=db.accounts[0].id;save();refresh()}catch(x){alert('Fichier de sauvegarde invalide.')}};r.readAsText(f);e.target.value=''};
+window.addEventListener('resize',()=>{if($('#dash').classList.contains('on'))renderDash()});
+refresh();
+if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
