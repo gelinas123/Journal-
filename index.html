@@ -73,6 +73,8 @@ h2.sec{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--m
 .gc{background:var(--s1);border:1px solid var(--ln);border-radius:16px;padding:12px 14px;margin-bottom:8px}
 .gc .top{display:flex;justify-content:space-between}.gc small{color:var(--mu);font-size:12px;display:block;margin:2px 0 8px}
 .bar{height:4px;background:var(--s2);border-radius:4px}.bar i{display:block;height:100%;border-radius:4px;background:var(--up)}.bar i.dn{background:var(--dn)}
+.bk{display:flex;gap:12px;align-items:center;justify-content:space-between;border-color:rgba(240,185,11,.45);padding:12px 14px}.bk span{font-size:13px}
+.bk button{padding:8px 14px;border-radius:10px;background:var(--acc);color:#0A0D12;border-color:var(--acc);font-weight:700;font-size:14px;flex-shrink:0}
 .lock{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center}
 .mark{width:64px;height:64px;border-radius:18px;background:var(--s1);border:1px solid var(--ln);display:grid;place-items:center;color:var(--acc);font-weight:800;font-size:22px;margin-bottom:6px}
 .lock h2{margin:0;font-size:22px}.lock p{margin:0;color:var(--mu);max-width:280px}.lock p.err{color:var(--dn)}
@@ -86,6 +88,7 @@ h2.sec{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--m
 <header><div class="hi"><small>Bonjour,</small><b id="hello"></b></div><select id="acc"></select><button id="addacc" aria-label="Nouveau compte">+</button></header>
 
 <section id="dash" class="on">
+ <div class="card bk" id="bk" hidden></div>
  <div class="card hero">
   <div class="lab">Solde du compte</div><div class="big" id="bal"></div><div class="chg" id="chg"></div>
   <div class="chips" id="per"><button data-p="0" class="on">Tout</button><button data-p="30">30 j</button><button data-p="7">7 j</button></div>
@@ -143,6 +146,7 @@ h2.sec{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--m
  <button id="bak">Sauvegarder (fichier JSON)<i>›</i></button>
  <button id="imp">Restaurer une sauvegarde<i>›</i></button>
  <input id="file" type="file" accept=".json,application/json" hidden>
+ <p class="empty" id="stinfo" style="padding-bottom:0"></p>
  <p class="empty">Les données restent sur ce téléphone. Fais une sauvegarde régulièrement.</p>
 </section>
 
@@ -199,7 +203,7 @@ async function key(k){L.msg='';if(k==='⌫')L.pin=L.pin.slice(0,-1);else if(L.pi
  else if(m==='confirm'){if(L.pin===L.tmp){const salt=Math.random().toString(36).slice(2);
    localStorage.setItem('tj_auth',JSON.stringify({id:L.id,salt,hash:await hash(L.pin,salt)}));unlock()}
   else{L.pin='';L.tmp='';L.mode='setup';L.msg='Les codes diffèrent. Recommence.';drawLock()}}}
-function unlock(){$('#lock').hidden=true;$('#app').hidden=false;$('#hello').textContent=A().id;refresh()}
+function unlock(){try{navigator.storage.persist().catch(()=>{})}catch(e){}$('#lock').hidden=true;$('#app').hidden=false;$('#hello').textContent=A().id;refresh()}
 $('#lock').onclick=e=>{const b=e.target.closest('[data-k]');if(b)return key(b.dataset.k);
  if(e.target.id==='lgo'){const v=$('#lid').value.trim();if(!v)return;L.id=v;L.mode='setup';drawLock()}
  if(e.target.id==='lcancel')unlock();
@@ -238,7 +242,7 @@ function renderDash(){
  $('#det').innerHTML=tile('Trades clôturés',s.n+(s.open?' <small>+'+s.open+' ouvert'+(s.open>1?'s':'')+'</small>':''))+tile('Gain moyen',money(s.aw),'up')+tile('Perte moyenne',money(s.al),'dn')+
   tile('Meilleur trade',money(s.best),cls(s.best))+tile('Pire trade',money(s.worst),cls(s.worst))+tile('Drawdown max',fm(s.mdd)+' <small>'+s.mddp.toFixed(1)+' %</small>','dn')+tile('Séries max (G / P)',s.bw+' / '+s.bl);
  document.querySelectorAll('#per button').forEach(b=>b.classList.toggle('on',+b.dataset.p===per));
- draw(s.pts,s.base)}
+ renderBk();draw(s.pts,s.base)}
 
 function renderList(){
  const f=$('#fsym').value,syms=[...new Set(rows().map(t=>t.sym))].sort();
@@ -291,7 +295,7 @@ function openForm(t){
 function go(t){
  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===t));
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
- if(t==='dash')renderDash();if(t==='list')renderList();if(t==='an')renderAn();if(t==='form'&&editId===null)openForm(null);window.scrollTo(0,0)}
+ if(t==='dash')renderDash();if(t==='list')renderList();if(t==='an')renderAn();if(t==='more')renderSt();if(t==='form'&&editId===null)openForm(null);window.scrollTo(0,0)}
 function refresh(){$('#acc').innerHTML=db.accounts.map(a=>`<option value="${a.id}" ${a.id===cur().id?'selected':''}>${esc(a.name)}</option>`).join('');go(document.querySelector('section.on').id)}
 
 $('#emos').innerHTML=EMO.map(e=>`<button type="button" data-v="${e}">${e}</button>`).join('');
@@ -322,7 +326,15 @@ $('#csv').onclick=()=>{const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"
  const L=db.trades.slice().sort((a,b)=>a.dt.localeCompare(b.dt)).map(t=>{const r=rMult(t),a=db.accounts.find(x=>x.id===t.acc);
   return[t.dt,a?a.name:'',t.sym,t.side,t.lot,t.entry,t.exit,t.sl,t.tp,t.fees,t.pnl,r==null?'':r.toFixed(3),t.strat,t.emo,t.notes].map(q).join(',')});
  dl('trades.csv','\ufeff'+[h.join(',')].concat(L).join('\n'),'text/csv')};
-$('#bak').onclick=()=>dl('journal-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(db),'application/json');
+const bkDays=()=>{const t=+localStorage.getItem('tj_bk');return t?Math.floor((Date.now()-t)/864e5):null};
+function doBackup(){dl('journal-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(db),'application/json');localStorage.setItem('tj_bk',Date.now());renderBk()}
+function renderBk(){const d=bkDays(),el=$('#bk');
+ if(!db.trades.length||(d!==null&&d<7)){el.hidden=true;return}
+ el.hidden=false;el.innerHTML='<span>'+(d===null?'Aucune sauvegarde pour l’instant.':'Dernière sauvegarde il y a '+d+' jours.')+'</span><button id="bkgo">Sauvegarder</button>'}
+async function renderSt(){const d=bkDays();let p=null;try{p=await navigator.storage.persisted()}catch(e){}
+ $('#stinfo').textContent='Dernière sauvegarde : '+(d===null?'aucune':d===0?'aujourd’hui':'il y a '+d+' j')+'. Stockage : '+(p?'protégé contre l’effacement automatique.':p===false?'non garanti par Android.':'statut indisponible.')}
+$('#bak').onclick=doBackup;
+$('#bk').onclick=e=>{if(e.target.id==='bkgo')doBackup()};
 $('#imp').onclick=()=>$('#file').click();
 $('#file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
  r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.accounts)||!d.accounts.length||!Array.isArray(d.trades))throw 0;
