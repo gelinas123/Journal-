@@ -61,6 +61,18 @@ nav div{display:flex;width:100%;max-width:560px}
 nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;border-radius:0;color:var(--mu);font-size:11px;padding:10px 4px}
 nav button.on{color:var(--acc)}
 nav button.add svg{background:var(--acc);color:#0A0D12;border-radius:50%;padding:7px;width:34px;height:34px;margin-top:-14px;box-shadow:0 4px 14px rgba(240,185,11,.35)}
+.tiles.two{grid-template-columns:1fr 1fr}.tile small{font-size:12px;color:var(--mu);font-weight:400}
+h2.sec{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--mu);margin:6px 2px 10px;font-weight:600}
+.lbl{color:var(--mu);font-size:12px}
+.sc{overflow-x:auto;white-space:nowrap;margin-top:0}.sc button{flex-shrink:0}
+.mh{display:flex;align-items:center;justify-content:space-between;margin:6px 0 12px;text-transform:capitalize;font-weight:600}.mh button{width:38px;height:38px;padding:0;border-radius:50%}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:14px}
+.wd{text-align:center;color:var(--mu);font-size:11px;font-weight:500}
+.cd{aspect-ratio:1;background:var(--s1);border:1px solid var(--ln);border-radius:10px;padding:4px;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.cd span{font-size:11px;color:var(--mu)}.cd em{font-style:normal;font-size:10px;text-align:right;overflow:hidden}
+.gc{background:var(--s1);border:1px solid var(--ln);border-radius:16px;padding:12px 14px;margin-bottom:8px}
+.gc .top{display:flex;justify-content:space-between}.gc small{color:var(--mu);font-size:12px;display:block;margin:2px 0 8px}
+.bar{height:4px;background:var(--s2);border-radius:4px}.bar i{display:block;height:100%;border-radius:4px;background:var(--up)}.bar i.dn{background:var(--dn)}
 .lock{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center}
 .mark{width:64px;height:64px;border-radius:18px;background:var(--s1);border:1px solid var(--ln);display:grid;place-items:center;color:var(--acc);font-weight:800;font-size:22px;margin-bottom:6px}
 .lock h2{margin:0;font-size:22px}.lock p{margin:0;color:var(--mu);max-width:280px}.lock p.err{color:var(--dn)}
@@ -80,7 +92,7 @@ nav button.add svg{background:var(--acc);color:#0A0D12;border-radius:50%;padding
   <canvas id="chart"></canvas>
  </div>
  <div class="tiles" id="tiles"></div>
- <div class="card"><h2>Détails</h2><div id="det"></div></div>
+ <h2 class="sec">Détails</h2><div class="tiles two" id="det"></div>
 </section>
 
 <section id="list"><select id="fsym"></select><div id="rows"></div></section>
@@ -107,13 +119,17 @@ nav button.add svg{background:var(--acc);color:#0A0D12;border-radius:50%;padding
   </div>
   <div class="card g"><h2 class="full">Journal</h2>
    <label class="full">Stratégie<input id="strat"></label>
-   <div class="full emos" id="emos"></div>
+   <div class="full lbl">Émotion ressentie pendant le trade</div><div class="full emos" id="emos"></div>
    <label class="full">Notes et erreurs<textarea id="notes" rows="3"></textarea></label>
   </div>
   <button class="btn" type="submit">Enregistrer le trade</button>
   <button class="btn d" type="button" id="del" hidden>Supprimer ce trade</button>
  </form>
 </section>
+
+<section id="an"><h1 class="t">Analyse</h1>
+ <div class="chips sc" id="acat"><button data-c="cal" class="on">Calendrier</button><button data-c="sym">Actifs</button><button data-c="strat">Stratégies</button><button data-c="dow">Jours</button><button data-c="hour">Heures</button></div>
+ <div id="acont"></div></section>
 
 <section id="more" class="set">
  <h1 class="t">Réglages</h1>
@@ -134,6 +150,7 @@ nav button.add svg{background:var(--acc);color:#0A0D12;border-radius:50%;padding
  <button data-t="dash" class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21H3z"/></svg>Accueil</button>
  <button data-t="list"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Trades</button>
  <button data-t="form" class="add"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Ajouter</button>
+ <button data-t="an"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V10M12 21V3M19 21v-7"/></svg>Analyse</button>
  <button data-t="more"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>Réglages</button>
 </div></nav>
 </div>
@@ -214,13 +231,12 @@ function draw(pts,base){
 
 function renderDash(){
  const s=stats(per),ch=s.base?s.tot/Math.abs(s.base)*100:0,
-  tile=(l,v,c='')=>`<div class="tile"><span>${l}</span><b class="num ${c}">${v}</b></div>`,
-  kv=(l,v,c='')=>`<div class="kv"><span>${l}</span><b class="num ${c}">${v}</b></div>`;
+  tile=(l,v,c='')=>`<div class="tile"><span>${l}</span><b class="num ${c}">${v}</b></div>`;
  $('#bal').textContent=fm(s.bal);
  $('#chg').innerHTML=`<span class="num ${cls(s.tot)}">${money(s.tot)}</span><em class="${cls(s.tot)}">${ch>=0?'+':'−'}${Math.abs(ch).toFixed(1)} %</em>`;
  $('#tiles').innerHTML=tile('Réussite',s.wr.toFixed(0)+' %')+tile('Profit factor',s.pf===Infinity?'∞':s.pf.toFixed(2))+tile('Espérance',money(s.ex),cls(s.ex));
- $('#det').innerHTML=kv('Trades clôturés',s.n+(s.open?' (+'+s.open+' ouvert'+(s.open>1?'s':'')+')':''))+kv('Gain moyen',money(s.aw),'up')+kv('Perte moyenne',money(s.al),'dn')+
-  kv('Meilleur trade',money(s.best),cls(s.best))+kv('Pire trade',money(s.worst),cls(s.worst))+kv('Drawdown max',fm(s.mdd)+' ('+s.mddp.toFixed(1)+' %)','dn')+kv('Séries max (G / P)',s.bw+' / '+s.bl);
+ $('#det').innerHTML=tile('Trades clôturés',s.n+(s.open?' <small>+'+s.open+' ouvert'+(s.open>1?'s':'')+'</small>':''))+tile('Gain moyen',money(s.aw),'up')+tile('Perte moyenne',money(s.al),'dn')+
+  tile('Meilleur trade',money(s.best),cls(s.best))+tile('Pire trade',money(s.worst),cls(s.worst))+tile('Drawdown max',fm(s.mdd)+' <small>'+s.mddp.toFixed(1)+' %</small>','dn')+tile('Séries max (G / P)',s.bw+' / '+s.bl);
  document.querySelectorAll('#per button').forEach(b=>b.classList.toggle('on',+b.dataset.p===per));
  draw(s.pts,s.base)}
 
@@ -235,6 +251,34 @@ function renderList(){
   <div class="r num"><b class="${cls(t.pnl)}">${typeof t.pnl==='number'?money(t.pnl):'ouvert'}</b><small>${r==null?'':r.toFixed(2)+' R'}</small></div></div>`});
  $('#rows').innerHTML=out||'<p class="empty">Aucun trade pour l’instant.<br>Touche « Ajouter » pour saisir le premier.</p>'}
 
+const DOW=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'],sum=a=>a.reduce((x,y)=>x+y,0);
+let acat='cal',cm=new Date();cm.setDate(1);
+const closed=()=>rows().filter(t=>typeof t.pnl==='number');
+const cmp=v=>{const a=Math.abs(v);return(v>0?'+':v<0?'−':'')+(a>=1000?(a/1000).toFixed(1)+'k':a<10?a.toFixed(1):Math.round(a))};
+function renderCal(){
+ const y=cm.getFullYear(),m=cm.getMonth(),n=new Date(y,m+1,0).getDate(),first=(new Date(y,m,1).getDay()+6)%7,by={},
+  key=d=>y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),
+  tile=(l,v,c='')=>`<div class="tile"><span>${l}</span><b class="num ${c}">${v}</b></div>`;
+ closed().forEach(t=>{const d=t.dt.slice(0,10);by[d]=(by[d]||0)+t.pnl});
+ let mx=0,tot=0,w=0,l=0;for(let d=1;d<=n;d++){const v=by[key(d)];if(v!=null){mx=Math.max(mx,Math.abs(v));tot+=v;if(v>0)w++;else if(v<0)l++}}
+ let g='';['L','M','M','J','V','S','D'].forEach(x=>g+=`<b class="wd">${x}</b>`);
+ for(let i=0;i<first;i++)g+='<span></span>';
+ for(let d=1;d<=n;d++){const v=by[key(d)],a=v==null?0:(mx?.14+.4*Math.abs(v)/mx:.14);
+  g+=`<div class="cd"${v==null?'':` style="background:rgba(${v>=0?'22,199,132':'234,57,67'},${a.toFixed(2)})"`}><span>${d}</span>${v==null?'':`<em class="num">${cmp(v)}</em>`}</div>`}
+ $('#acont').innerHTML=`<div class="mh"><button data-mv="-1">‹</button><span>${cm.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</span><button data-mv="1">›</button></div>
+  <div class="tiles">${tile('P&amp;L du mois',money(tot),cls(tot))+tile('Jours gagnants',w,'up')+tile('Jours perdants',l,'dn')}</div><div class="cal">${g}</div>`}
+function renderAn(){
+ document.querySelectorAll('#acat button').forEach(b=>b.classList.toggle('on',b.dataset.c===acat));
+ if(acat==='cal')return renderCal();
+ const kf={sym:t=>t.sym,strat:t=>t.strat||'Sans stratégie',dow:t=>DOW[(new Date(t.dt.slice(0,10)+'T12:00').getDay()+6)%7],hour:t=>t.dt.slice(11,13)+' h'}[acat],mp={};
+ closed().forEach(t=>{const k=kf(t);(mp[k]=mp[k]||[]).push(t.pnl)});
+ const L=Object.entries(mp).map(([k,a])=>{const gw=sum(a.filter(x=>x>0)),gl=-sum(a.filter(x=>x<0)),p=sum(a);
+  return{k,n:a.length,p,wr:a.filter(x=>x>0).length/a.length*100,pf:gl?gw/gl:(gw?Infinity:0),ex:p/a.length}});
+ if(acat==='dow')L.sort((a,b)=>DOW.indexOf(a.k)-DOW.indexOf(b.k));else if(acat==='hour')L.sort((a,b)=>a.k.localeCompare(b.k));else L.sort((a,b)=>b.p-a.p);
+ const mx=Math.max(...L.map(x=>Math.abs(x.p)),0)||1;
+ $('#acont').innerHTML=L.length?L.map(x=>`<div class="gc"><div class="top"><b>${esc(x.k)}</b><b class="num ${cls(x.p)}">${money(x.p)}</b></div>
+  <small>${x.n} trade${x.n>1?'s':''} · ${x.wr.toFixed(0)} % réussite · PF ${x.pf===Infinity?'∞':x.pf.toFixed(2)} · espérance ${money(x.ex)}</small>
+  <div class="bar"><i class="${x.p<0?'dn':''}" style="width:${(Math.abs(x.p)/mx*100).toFixed(0)}%"></i></div></div>`).join(''):'<p class="empty">Aucun trade clôturé pour l’instant.</p>'}
 function setSide(v){$('#seg').dataset.v=v;document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
 function setEmo(v){$('#emos').dataset.v=v||'';document.querySelectorAll('#emos button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
 function openForm(t){
@@ -247,12 +291,14 @@ function openForm(t){
 function go(t){
  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===t));
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
- if(t==='dash')renderDash();if(t==='list')renderList();if(t==='form'&&editId===null)openForm(null);window.scrollTo(0,0)}
+ if(t==='dash')renderDash();if(t==='list')renderList();if(t==='an')renderAn();if(t==='form'&&editId===null)openForm(null);window.scrollTo(0,0)}
 function refresh(){$('#acc').innerHTML=db.accounts.map(a=>`<option value="${a.id}" ${a.id===cur().id?'selected':''}>${esc(a.name)}</option>`).join('');go(document.querySelector('section.on').id)}
 
 $('#emos').innerHTML=EMO.map(e=>`<button type="button" data-v="${e}">${e}</button>`).join('');
 $('#emos').onclick=e=>{const b=e.target.closest('button');if(b)setEmo($('#emos').dataset.v===b.dataset.v?'':b.dataset.v)};
 $('#seg').onclick=e=>{const b=e.target.closest('button');if(b)setSide(b.dataset.v)};
+$('#acat').onclick=e=>{const b=e.target.closest('button');if(b){acat=b.dataset.c;renderAn()}};
+$('#acont').onclick=e=>{const b=e.target.closest('[data-mv]');if(b){cm.setMonth(cm.getMonth()+ +b.dataset.mv);renderCal()}};
 $('#per').onclick=e=>{const b=e.target.closest('button');if(b){per=+b.dataset.p;renderDash()}};
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.t==='form')editId=null;go(b.dataset.t)});
 $('#acc').onchange=e=>{db.acc=+e.target.value;save();refresh()};
