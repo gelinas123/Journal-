@@ -85,6 +85,16 @@ h2.sec{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--m
 details.card summary{cursor:pointer;color:var(--mu);font-size:12px;letter-spacing:.8px;text-transform:uppercase;font-weight:600;list-style:none}
 details.card summary::-webkit-details-marker{display:none}details.card summary::after{content:'+';float:right;font-size:16px}details[open].card summary::after{content:'–'}
 .ck{flex-direction:row!important;align-items:center;gap:10px;color:var(--tx)!important;font-size:15px!important;padding:6px 0}.ck input{width:20px;height:20px;accent-color:var(--acc)}
+.big small{font-size:16px;color:var(--mu);font-weight:400;margin-left:6px}
+.lock textarea{width:100%;max-width:340px;font-size:15px;text-align:left}
+#meth{justify-content:flex-start;overflow-y:auto;padding-top:44px}#meth .btn{max-width:340px}#meth .btn.s2{background:var(--s1);color:var(--tx);border-color:var(--ln)}
+#guide{position:fixed;inset:0;background:var(--bg);z-index:25;overflow-y:auto;padding:env(safe-area-inset-top) 18px 40px}
+#guide .gh{display:flex;justify-content:space-between;align-items:center;padding:16px 0 10px;position:sticky;top:0;background:var(--bg)}
+#guide h2{margin:0;font-size:22px}#gdx{width:38px;height:38px;padding:0;border-radius:50%}
+#guide details{background:var(--s1);border:1px solid var(--ln);border-radius:16px;margin-bottom:10px}
+#guide summary{padding:14px 16px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between}#guide summary::-webkit-details-marker{display:none}
+#guide summary::after{content:'+';color:var(--mu)}#guide details[open] summary::after{content:'−'}
+#guide .bd{padding:0 16px 12px;color:#C9CFD8;font-size:14px;line-height:1.55}#guide .bd p{margin:0 0 10px}#guide .bd b{color:var(--tx)}
 .lock{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center}
 .mark{width:64px;height:64px;border-radius:18px;background:var(--s1);border:1px solid var(--ln);display:grid;place-items:center;color:var(--acc);font-weight:800;font-size:22px;margin-bottom:6px}
 .lock h2{margin:0;font-size:22px}.lock p{margin:0;color:var(--mu);max-width:280px}.lock p.err{color:var(--dn)}
@@ -94,6 +104,54 @@ details.card summary::-webkit-details-marker{display:none}details.card summary::
 .lock a{color:var(--mu);font-size:14px;margin-top:10px;text-decoration:underline;cursor:pointer}
 </style></head><body>
 <div id="lock" class="lock"></div>
+<div id="guide" hidden>
+ <div class="gh"><h2>Guide d’utilisation</h2><button id="gdx" aria-label="Fermer">✕</button></div>
+ <details open><summary>Premiers pas</summary><div class="bd">
+  <p><b>Installer l’app.</b> Android : ouvre le lien dans Chrome, menu ⋮ puis « Installer l’application ». iPhone : ouvre-le dans Safari, bouton Partager puis « Sur l’écran d’accueil ».</p>
+  <p><b>Identifiant et code PIN.</b> Au premier lancement, tu choisis un identifiant et un code à 4 chiffres. L’app se verrouille seule quand tu la quittes plus de 30 secondes. Si tu oublies ton code, la seule solution est de réinitialiser l’app, ce qui efface le journal : garde donc des sauvegardes.</p>
+  <p><b>Tes données</b> restent uniquement sur ce téléphone. Rien n’est envoyé sur internet.</p></div></details>
+ <details><summary>Enregistrer un trade</summary><div class="bd">
+  <p>Seuls l’<b>actif</b> et la <b>date</b> sont obligatoires. Le reste est facultatif : remplis ce qui t’est utile.</p>
+  <p><b>Trade ouvert ou clôturé.</b> Un trade sans P&amp;L est « ouvert ». Tu peux le noter à l’entrée et le clôturer des jours plus tard : touche-le dans l’onglet Trades, puis remplis le prix de sortie et le P&amp;L net. Un trade ouvert ne compte pas dans le solde ni dans les statistiques.</p>
+  <p><b>P&amp;L net.</b> Recopie le résultat net affiché par ta plateforme : gain en positif, perte avec un signe moins (par exemple −25,5). L’app ne le calcule pas, car la valeur d’un point change selon l’actif et le courtier.</p>
+  <p><b>Trade non pris.</b> Choisis « Non pris » pour noter un setup que tu as laissé passer, avec la raison. Il n’entre ni dans le solde ni dans les résultats, mais il apparaît dans Analyse &gt; Discipline.</p>
+  <p><b>Modifier ou supprimer.</b> Touche un trade dans la liste. Le bouton rouge « Supprimer ce trade » est tout en bas de la fiche.</p></div></details>
+ <details><summary>Les notions clés</summary><div class="bd">
+  <p><b>Stop loss (SL)</b> : le prix où tu abandonnes le trade s’il tourne mal. <b>Take profit (TP)</b> : le prix où tu veux encaisser. Ce sont des prévisions fixées à l’avance. Le <b>prix de sortie</b> est celui auquel le trade a réellement été fermé.</p>
+  <p><b>Multiple de R.</b> Il mesure ton résultat par rapport à ce que tu risquais. Exemple : entrée 5000, SL 4500 (risque 500 points), sortie 7000 (gain 2000 points) : 2000 ÷ 500 = 4 R. Le <b>R réel</b> utilise ton prix de sortie, le <b>R prévu</b> utilise ton take profit. Il faut renseigner l’entrée, le SL et la sortie.</p>
+  <p><b>Taux de réussite</b> : la part de trades gagnants parmi les trades clôturés.</p>
+  <p><b>Profit factor</b> : gains totaux ÷ pertes totales. Au-dessus de 1, tu gagnes plus que tu perds. Exemple : +500 et −250 donnent 2,00.</p>
+  <p><b>Espérance</b> : ce que te rapporte un trade en moyenne (P&amp;L total ÷ nombre de trades clôturés).</p>
+  <p><b>Drawdown max</b> : ta plus grosse baisse de capital depuis un sommet, en argent et en pourcentage.</p>
+  <p><b>Séries max (G / P)</b> : ta plus longue série de gains et de pertes d’affilée.</p></div></details>
+ <details><summary>Checklist et discipline</summary><div class="bd">
+  <p><b>Checklist de setup.</b> Dans le formulaire, coche les conditions remplies avant d’entrer. Tout coché = setup valide, sinon non valide. Si tu ne coches rien, aucun verdict n’est enregistré et le trade n’entre pas dans l’analyse Discipline.</p>
+  <p><b>Ta propre méthode.</b> Dans Réglages &gt; Ma méthode, colle ta checklist (un élément par ligne), nomme ton protocole d’exécution (par exemple « Pause 5 s »), ou désactive tout. Chacun garde la sienne.</p>
+  <p><b>Exécution.</b> Note si tu as respecté ton protocole et si tu as hésité.</p>
+  <p><b>Psychologie.</b> Ton état avant, ton émotion pendant et ton état d’esprit après. Analyse &gt; Émotions montre ce que chacun te coûte ou te rapporte.</p>
+  <p><b>Analyse à froid.</b> À remplir plus tard, en rouvrant le trade : setup respecté, erreur principale, point positif, leçon.</p></div></details>
+ <details><summary>Analyse et captures</summary><div class="bd">
+  <p>L’onglet <b>Analyse</b> propose le calendrier (un mois, chaque jour coloré selon le résultat), puis les résultats par actif, stratégie, timeframe, jour et heure, la discipline et les émotions.</p>
+  <p>Ces statistiques ne deviennent fiables qu’à partir d’une trentaine de trades : avec 1 ou 2 trades par groupe, les pourcentages ne disent pas grand-chose.</p>
+  <p><b>Captures d’écran.</b> Ajoute une image avant et une après le trade. Touche une miniature pour l’agrandir, ✕ pour la retirer. Elles sont incluses dans les sauvegardes.</p></div></details>
+ <details><summary>Comptes</summary><div class="bd">
+  <p>Un compte, c’est un dossier pour ranger tes trades (démo, réel…). Le menu en haut change de compte et le bouton + en crée un. Dans Réglages, tu peux renommer le compte, changer sa devise ou son capital de départ, ou le supprimer avec tous ses trades.</p>
+  <p>Le solde est le capital de départ plus tous les P&amp;L clôturés. Il n’est pas relié à ton courtier : tu saisis tes trades toi-même.</p></div></details>
+ <details><summary>Sauvegarde et sécurité</summary><div class="bd">
+  <p><b>Sauvegarder.</b> Réglages &gt; Sauvegarder crée un fichier avec tes trades, tes comptes et tes captures. Envoie-le ailleurs (Drive, e-mail, WhatsApp) : un fichier qui reste sur le téléphone ne te protège pas s’il est perdu. Un bandeau te rappelle de sauvegarder chaque semaine.</p>
+  <p><b>Restaurer.</b> Réglages &gt; Restaurer une sauvegarde, puis choisis ton fichier. Le journal actuel est remplacé.</p>
+  <p><b>Ce qui efface le journal.</b> Vider les données de Chrome, désinstaller l’app ou utiliser un onglet privé. La sauvegarde est ta vraie protection.</p>
+  <p><b>Exporter en CSV</b> donne tous tes trades dans un tableau lisible dans Excel.</p>
+  <p><b>Code PIN.</b> Il verrouille l’accès à l’app, mais ce n’est pas un chiffrement : le verrou de ton téléphone reste la vraie protection.</p></div></details>
+ <details><summary>Mises à jour et plusieurs appareils</summary><div class="bd">
+  <p>L’app se met à jour toute seule quand tu as internet : ferme-la et rouvre-la deux fois pour voir la nouvelle version. Elle fonctionne aussi sans connexion.</p>
+  <p>Chaque téléphone ou ordinateur a son propre journal. Pour transférer des trades, sauvegarde sur le premier appareil puis restaure sur le second.</p></div></details>
+</div>
+<div id="meth" class="lock" style="z-index:25" hidden><div class="mark">✓</div><h2>Ma méthode</h2>
+ <p>Chacun garde sa propre checklist. Écris un élément par ligne, ou laisse vide pour ne pas en utiliser.</p>
+ <textarea id="m_ck" rows="7" placeholder="Un élément par ligne"></textarea>
+ <input id="m_pr" placeholder="Nom de ton protocole (vide = aucun)" maxlength="40">
+ <button class="btn" id="m_ok">Enregistrer</button><button class="btn s2" id="m_tpl">Charger le modèle BOS / EMA 50</button><button class="btn d" id="m_off">Tout désactiver</button><a id="m_x">Annuler</a></div>
 <div id="viewer" hidden></div>
 <div id="app" hidden>
 <header><div class="hi"><small>Bonjour,</small><b id="hello"></b></div><select id="acc"></select><button id="addacc" aria-label="Nouveau compte">+</button></header>
@@ -132,9 +190,9 @@ details.card summary::-webkit-details-marker{display:none}details.card summary::
    <label>Structure<select id="f_struct"><option value="">–</option><option>BOS</option><option>CHOCH</option><option>Aucune</option></select></label>
    <label>Contexte global<select id="f_clean"><option value="">–</option><option>Propre</option><option>Chaotique</option></select></label>
    <label class="full">Zone clé (POI, liquidité)<input id="f_zone"></label></div></details>
-  <details class="card"><summary>Checklist de setup</summary><div id="ckl" style="margin-top:12px"></div></details>
+  <details class="card" id="ckcard"><summary>Checklist de setup</summary><div id="ckl" style="margin-top:12px"></div></details>
   <details class="card"><summary>Exécution et discipline</summary><div class="g" style="margin-top:12px">
-   <label>Protocole 10 s respecté ?<select id="f_p10"><option value="">–</option><option>Oui</option><option>Non</option></select></label>
+   <label id="p10w"><span id="p10l">Protocole respecté ?</span><select id="f_p10"><option value="">–</option><option>Oui</option><option>Non</option></select></label>
    <label>J’ai hésité ?<select id="f_hes"><option value="">–</option><option>Oui</option><option>Non</option></select></label></div></details>
   <div class="card g px"><h2 class="full">Exécution et risque</h2>
    <label>Prix d’entrée<input id="entry" type="number" step="any"></label>
@@ -174,13 +232,17 @@ details.card summary::-webkit-details-marker{display:none}details.card summary::
 
 <section id="more" class="set">
  <h1 class="t">Réglages</h1>
+ <button id="gdopen">Guide d’utilisation<i>›</i></button>
  <div class="card"><h2>Accès</h2></div>
  <button id="lockNow">Verrouiller maintenant<i>›</i></button>
  <button id="chpin">Changer le code PIN<i>›</i></button>
  <button id="chid">Modifier l’identifiant<i>›</i></button>
  <div class="card" style="margin-top:14px"><h2>Compte et données</h2></div>
  <button id="capital">Capital de départ<i>›</i></button>
- <button id="chkset">Ma checklist de setup<i>›</i></button>
+ <button id="accname">Renommer le compte<i>›</i></button>
+ <button id="acccur">Devise du compte<i>›</i></button>
+ <button id="accdel" style="color:var(--dn)">Supprimer le compte<i>›</i></button>
+ <button id="chkset">Ma méthode (checklist et protocole)<i>›</i></button>
  <button id="csv">Exporter les trades (CSV)<i>›</i></button>
  <button id="bak">Sauvegarder (fichier JSON)<i>›</i></button>
  <button id="imp">Restaurer une sauvegarde<i>›</i></button>
@@ -201,8 +263,11 @@ details.card summary::-webkit-details-marker{display:none}details.card summary::
 <script>
 const $=s=>document.querySelector(s),KEY='tj_v1',EMO=['Calme','Confiant','Hésitant','Stressé','Impatient','Revanche'];
 let db=load(),editId=null,per=0,hid=0;
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.accounts&&d.accounts.length&&d.trades)return d}catch(e){}
- return{accounts:[{id:1,name:'Compte démo',initial:10000}],trades:[],acc:1}}
+function mig(d){if(d.chk===undefined)d.chk=d.trades.some(t=>t.ck&&t.ck.length)?['Tendance validée','BOS confirmé','Pullback EMA 50','Zone clé touchée','Confirmation M15']:['Tendance claire','Structure respectée','Zone clé (POI)','Confirmation d’entrée'];
+ if(d.proto===undefined&&d.trades.some(t=>t.p10))d.proto='Protocole 10 s';return d}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.accounts&&d.accounts.length&&d.trades)return mig(d)}catch(e){}
+ return mig({accounts:[{id:1,name:'Compte démo',initial:10000,ccy:'USD'}],trades:[],acc:1})}
+const SYM={USD:'$',EUR:'€',GBP:'£',XOF:'FCFA',XAF:'FCFA',CAD:'$CA',JPY:'¥'},curSym=()=>{const c=(typeof cur==='function'&&cur().ccy)||'USD';return SYM[c]||c}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){alert('Sauvegarde impossible : le stockage du navigateur est indisponible.')}}
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fm=n=>n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -275,8 +340,8 @@ function draw(pts,base){
 function renderDash(){
  const s=stats(per),ch=s.base?s.tot/Math.abs(s.base)*100:0,
   tile=(l,v,c='')=>`<div class="tile"><span>${l}</span><b class="num ${c}">${v}</b></div>`;
- $('#bal').textContent=fm(s.bal);
- $('#chg').innerHTML=`<span class="num ${cls(s.tot)}">${money(s.tot)}</span><em class="${cls(s.tot)}">${ch>=0?'+':'−'}${Math.abs(ch).toFixed(1)} %</em>`;
+ $('#bal').innerHTML=fm(s.bal)+'<small>'+esc(curSym())+'</small>';
+ $('#chg').innerHTML=`<span class="num ${cls(s.tot)}">${money(s.tot)} ${esc(curSym())}</span><em class="${cls(s.tot)}">${ch>=0?'+':'−'}${Math.abs(ch).toFixed(1)} %</em>`;
  $('#tiles').innerHTML=tile('Réussite',s.wr.toFixed(0)+' %')+tile('Profit factor',s.pf===Infinity?'∞':s.pf.toFixed(2))+tile('Espérance',money(s.ex),cls(s.ex));
  $('#det').innerHTML=tile('Trades clôturés',s.n+(s.open?' <small>+'+s.open+' ouvert'+(s.open>1?'s':'')+'</small>':''))+tile('Gain moyen',money(s.aw),'up')+tile('Perte moyenne',money(s.al),'dn')+
   tile('Meilleur trade',money(s.best),cls(s.best))+tile('Pire trade',money(s.worst),cls(s.worst))+tile('Drawdown max',fm(s.mdd)+' <small>'+s.mddp.toFixed(1)+' %</small>','dn')+tile('Séries max (G / P)',s.bw+' / '+s.bl);
@@ -337,12 +402,19 @@ $('#shots').onchange=async e=>{const f=e.target.files[0],k=e.target.closest('.sh
  try{pend[k]=await shrink(f);chg[k]=1;drawShots()}catch(x){alert('Image illisible.')}e.target.value=''};
 $('#viewer').onclick=()=>{$('#viewer').hidden=true};
 const FIELDS=['tf','trend','struct','zone','clean','valid','p10','hes','why','rt','eb','ea','sr','err','pos','les'],
- DCK=['Tendance validée','BOS confirmé','Pullback EMA 50','Zone clé touchée','Confirmation M15'],CK=()=>db.chk&&db.chk.length?db.chk:DCK;
-function drawCk(t){$('#ckl').innerHTML=CK().map((c,i)=>`<label class="ck"><input type="checkbox" data-i="${i}"${t&&t.ck&&t.ck.includes(c)?' checked':''}><span>${esc(c)}</span></label>`).join('')}
+ DCK=['Tendance validée','BOS confirmé','Pullback EMA 50','Zone clé touchée','Confirmation M15'],CK=()=>db.chk||[];
+function applyMeth(){$('#ckcard').hidden=!CK().length;$('#ckcard').open=CK().length>0;$('#p10w').hidden=!db.proto;$('#p10l').textContent=(db.proto||'Protocole')+' respecté ?'}
+function drawCk(t){applyMeth();$('#ckl').innerHTML=CK().map((c,i)=>`<label class="ck"><input type="checkbox" data-i="${i}"${t&&t.ck&&t.ck.includes(c)?' checked':''}><span>${esc(c)}</span></label>`).join('')}
 $('#ckl').onchange=()=>{$('#f_valid').value=[...document.querySelectorAll('#ckl input')].every(x=>x.checked)?'Valide':'Non valide'};
 function setTk(v){$('#tk').dataset.v=v;document.querySelectorAll('#tk button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$('#f').classList.toggle('np',v==='0')}
 $('#tk').onclick=e=>{const b=e.target.closest('button');if(b)setTk(b.dataset.v)};
-$('#chkset').onclick=()=>{const v=prompt('Éléments de ta checklist, séparés par un point-virgule :',CK().join(' ; '));if(v===null)return;const a=v.split(';').map(x=>x.trim()).filter(Boolean);if(!a.length)return;db.chk=a;save();alert('Checklist mise à jour.')};
+$('#chkset').onclick=()=>{$('#m_ck').value=CK().join('\n');$('#m_pr').value=db.proto||'';$('#meth').hidden=false};
+$('#gdopen').onclick=()=>{$('#guide').hidden=false;$('#guide').scrollTop=0};
+$('#gdx').onclick=()=>{$('#guide').hidden=true};
+$('#m_x').onclick=()=>{$('#meth').hidden=true};
+$('#m_ok').onclick=()=>{db.chk=$('#m_ck').value.split('\n').map(x=>x.trim()).filter(Boolean);db.proto=$('#m_pr').value.trim();save();$('#meth').hidden=true;applyMeth()};
+$('#m_tpl').onclick=()=>{$('#m_ck').value=DCK.join('\n');$('#m_pr').value='Protocole 10 s'};
+$('#m_off').onclick=()=>{if(!confirm('Désactiver la checklist et le protocole ? Tes anciens trades gardent leurs réponses.'))return;db.chk=[];db.proto='';save();$('#meth').hidden=true;applyMeth()};
 function rPlan(t){const{entry:e,sl:l,tp:p}=t;if(![e,l,p].every(v=>typeof v==='number'))return null;const r=Math.abs(e-l);return r?Math.abs(p-e)/r:null}
 function grpH(trs,kf,ord){const mp={};trs.forEach(t=>{const k=kf(t);if(k)(mp[k]=mp[k]||[]).push(t.pnl)});
  const L=Object.entries(mp).map(([k,a])=>{const gw=sum(a.filter(x=>x>0)),gl=-sum(a.filter(x=>x<0)),p=sum(a);return{k,n:a.length,p,wr:a.filter(x=>x>0).length/a.length*100,pf:gl?gw/gl:(gw?Infinity:0),ex:p/a.length}});
@@ -356,11 +428,11 @@ function renderDisc(){
   tile=(l,v)=>`<div class="tile"><span>${l}</span><b class="num">${v}</b></div>`,
   pc=(f,g)=>{const a=tk.filter(g);return a.length?Math.round(a.filter(f).length/a.length*100)+' %':'–'},why={};
  np.forEach(t=>{const k=(t.why||'Sans raison').trim();why[k]=(why[k]||0)+1});
- const body=sec('Setup valide ou non',grpH(cl,t=>t.valid))+sec('Protocole 10 s',grpH(cl,t=>t.p10))+sec('Hésitation',grpH(cl,t=>t.hes))+sec('Setup respecté (analyse à froid)',grpH(cl,t=>t.sr))
+ const body=sec('Setup valide ou non',grpH(cl,t=>t.valid))+sec(db.proto||'Protocole',grpH(cl,t=>t.p10))+sec('Hésitation',grpH(cl,t=>t.hes))+sec('Setup respecté (analyse à froid)',grpH(cl,t=>t.sr))
   +sec('Type de sortie',grpH(cl,t=>t.rt))+sec('Contexte global',grpH(cl,t=>t.clean))+sec('Tendance H4',grpH(cl,t=>t.trend))
   +sec('Trades non pris : raisons',Object.entries(why).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<div class="gc"><div class="top"><b>${esc(k)}</b><b class="num">${n}</b></div></div>`).join(''));
  $('#acont').innerHTML=`<div class="tiles">${tile('Trades pris',tk.length)+tile('Non pris',np.length)+tile('Setup valide',pc(t=>t.valid==='Valide',t=>t.valid))}</div>
-  <div class="tiles">${tile('Protocole 10 s',pc(t=>t.p10==='Oui',t=>t.p10))+tile('Avec hésitation',pc(t=>t.hes==='Oui',t=>t.hes))+tile('Setup respecté',pc(t=>t.sr==='Oui',t=>t.sr))}</div>`
+  <div class="tiles">${tile(esc(db.proto||'Protocole'),pc(t=>t.p10==='Oui',t=>t.p10))+tile('Avec hésitation',pc(t=>t.hes==='Oui',t=>t.hes))+tile('Setup respecté',pc(t=>t.sr==='Oui',t=>t.sr))}</div>`
   +(body||'<p class="empty">Remplis le verdict, le protocole 10 s et les raisons des trades non pris pour alimenter cette vue.</p>')}
 function renderEmo(){const cl=closed(),h=sec('Avant le trade',grpH(cl,t=>t.eb))+sec('Pendant le trade',grpH(cl,t=>t.emo))+sec('Après le trade',grpH(cl,t=>t.ea));
  $('#acont').innerHTML=h||'<p class="empty">Renseigne ton état d’esprit sur tes trades clôturés pour voir ce qu’il te coûte ou te rapporte.</p>'}
@@ -389,8 +461,13 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.t
 $('#acc').onchange=e=>{db.acc=+e.target.value;save();refresh()};
 $('#fsym').onchange=renderList;
 $('#rows').onclick=e=>{const r=e.target.closest('.row');if(!r)return;openForm(db.trades.find(x=>x.id===+r.dataset.id));go('form')};
+$('#accname').onclick=()=>{const v=(prompt('Nouveau nom du compte ?',cur().name)||'').trim();if(!v)return;cur().name=v;save();refresh();renderSt()};
+$('#acccur').onclick=()=>{const v=(prompt('Devise du compte (USD, EUR, XOF, GBP…) ?',cur().ccy||'USD')||'').trim().toUpperCase().slice(0,5);if(!v)return;cur().ccy=v;save();renderSt()};
+$('#accdel').onclick=()=>{if(db.accounts.length<2)return alert('Tu dois garder au moins un compte.');const a=cur(),tr=db.trades.filter(t=>t.acc===a.id);
+ if(!confirm('Supprimer le compte « '+a.name+' » et ses '+tr.length+' trade(s) ? Cette action est définitive (fais une sauvegarde avant si besoin).'))return;
+ tr.forEach(t=>['b','a'].forEach(k=>imgDel(t.id+k).catch(()=>{})));db.trades=db.trades.filter(t=>t.acc!==a.id);db.accounts=db.accounts.filter(x=>x.id!==a.id);db.acc=db.accounts[0].id;save();refresh();renderSt()};
 $('#addacc').onclick=()=>{const n=prompt('Nom du compte ?');if(!n)return;const c=parseFloat((prompt('Capital de départ ?','10000')||'').replace(',','.'));if(isNaN(c))return;
- const id=Date.now();db.accounts.push({id,name:n.trim(),initial:c});db.acc=id;save();refresh()};
+ const dv=(prompt('Devise du compte (USD, EUR, XOF, GBP…) ?','USD')||'USD').trim().toUpperCase().slice(0,5)||'USD',id=Date.now();db.accounts.push({id,name:n.trim(),initial:c,ccy:dv});db.acc=id;save();refresh()};
 $('#capital').onclick=()=>{const c=parseFloat((prompt('Capital de départ de « '+cur().name+' » ?',cur().initial)||'').replace(',','.'));if(isNaN(c))return;cur().initial=c;save();alert('Capital mis à jour.')};
 $('#f').onsubmit=async e=>{e.preventDefault();
  const t={id:editId||Date.now(),acc:cur().id,dt:$('#dt').value,sym:$('#sym').value.trim().toUpperCase(),side:$('#seg').dataset.v||'BUY',lot:N('#lot'),entry:N('#entry'),exit:N('#exit'),sl:N('#sl'),tp:N('#tp'),fees:N('#fees'),pnl:N('#pnl'),strat:$('#strat').value.trim(),emo:$('#emos').dataset.v||'',notes:$('#notes').value.trim()};
@@ -407,7 +484,7 @@ $('#chid').onclick=()=>{const v=(prompt('Nouvel identifiant ?',A().id)||'').trim
 
 function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
 $('#csv').onclick=()=>{const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
- const h=['date','compte','actif','timeframe','sens','pris','lot','entree','sortie','sl','tp','frais','pnl','type_sortie','r_reel','r_prevu','verdict','checklist','protocole_10s','hesitation','pourquoi_non_pris','etat_avant','etat_pendant','etat_apres','setup_respecte','erreur','point_positif','lecon','strategie','notes'];
+ const h=['date','compte','actif','timeframe','sens','pris','lot','entree','sortie','sl','tp','frais','pnl','type_sortie','r_reel','r_prevu','verdict','checklist','protocole','hesitation','pourquoi_non_pris','etat_avant','etat_pendant','etat_apres','setup_respecte','erreur','point_positif','lecon','strategie','notes'];
  const L=db.trades.slice().sort((a,b)=>a.dt.localeCompare(b.dt)).map(t=>{const r=rMult(t),rp=rPlan(t),a=db.accounts.find(x=>x.id===t.acc);
   return[t.dt,a?a.name:'',t.sym,t.tf,t.side,t.taken===false?'non':'oui',t.lot,t.entry,t.exit,t.sl,t.tp,t.fees,t.pnl,t.rt,r==null?'':r.toFixed(3),rp==null?'':rp.toFixed(3),t.valid,(t.ck||[]).join(' | '),t.p10,t.hes,t.why,t.eb,t.emo,t.ea,t.sr,t.err,t.pos,t.les,t.strat,t.notes].map(q).join(',')});
  dl('trades.csv','\ufeff'+[h.join(',')].concat(L).join('\n'),'text/csv')};
@@ -419,13 +496,13 @@ function renderBk(){const d=bkDays(),el=$('#bk');
  if(!db.trades.length||(d!==null&&d<7)){el.hidden=true;return}
  el.hidden=false;el.innerHTML='<span>'+(d===null?'Aucune sauvegarde pour l’instant.':'Dernière sauvegarde il y a '+d+' jours.')+'</span><button id="bkgo">Sauvegarder</button>'}
 async function renderSt(){const d=bkDays();let p=null;try{p=await navigator.storage.persisted()}catch(e){}
- $('#stinfo').textContent='Dernière sauvegarde : '+(d===null?'aucune':d===0?'aujourd’hui':'il y a '+d+' j')+'. Stockage : '+(p?'protégé contre l’effacement automatique.':p===false?'non garanti par Android.':'statut indisponible.')}
+ $('#stinfo').textContent='Compte actuel : '+cur().name+' ('+(cur().ccy||'USD')+'). Dernière sauvegarde : '+(d===null?'aucune':d===0?'aujourd’hui':'il y a '+d+' j')+'. Stockage : '+(p?'protégé contre l’effacement automatique.':p===false?'non garanti par Android.':'statut indisponible.')}
 $('#bak').onclick=doBackup;
 $('#bk').onclick=e=>{if(e.target.id==='bkgo')doBackup()};
 $('#imp').onclick=()=>$('#file').click();
 $('#file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
  r.onload=async()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.accounts)||!d.accounts.length||!Array.isArray(d.trades))throw 0;
-  if(!confirm('Remplacer le journal actuel par cette sauvegarde ?'))return;const im=d.imgs||{};delete d.imgs;try{await imgClear();for(const k in im)await imgPut(k,im[k])}catch(x){alert('Certaines captures n’ont pas pu être restaurées.')}db=d;if(!db.acc)db.acc=db.accounts[0].id;save();refresh()}catch(x){alert('Fichier de sauvegarde invalide.')}};r.readAsText(f);e.target.value=''};
+  if(!confirm('Remplacer le journal actuel par cette sauvegarde ?'))return;const im=d.imgs||{};delete d.imgs;try{await imgClear();for(const k in im)await imgPut(k,im[k])}catch(x){alert('Certaines captures n’ont pas pu être restaurées.')}db=mig(d);if(!db.acc)db.acc=db.accounts[0].id;save();refresh()}catch(x){alert('Fichier de sauvegarde invalide.')}};r.readAsText(f);e.target.value=''};
 window.addEventListener('resize',()=>{if($('#dash').classList.contains('on')&&!$('#app').hidden)renderDash()});
 showLock();
 if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js').catch(()=>{});
