@@ -95,6 +95,7 @@ details.card summary::-webkit-details-marker{display:none}details.card summary::
 #guide summary{padding:14px 16px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between}#guide summary::-webkit-details-marker{display:none}
 #guide summary::after{content:'+';color:var(--mu)}#guide details[open] summary::after{content:'−'}
 #guide .bd{padding:0 16px 12px;color:#C9CFD8;font-size:14px;line-height:1.55}#guide .bd p{margin:0 0 10px}#guide .bd b{color:var(--tx)}
+.od{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--acc);margin-left:4px;vertical-align:middle}.cd span small{font-size:9px;margin-left:3px}
 .lock{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center}
 .mark{width:64px;height:64px;border-radius:18px;background:var(--s1);border:1px solid var(--ln);display:grid;place-items:center;color:var(--acc);font-weight:800;font-size:22px;margin-bottom:6px}
 .lock h2{margin:0;font-size:22px}.lock p{margin:0;color:var(--mu);max-width:280px}.lock p.err{color:var(--dn)}
@@ -113,6 +114,7 @@ details.card summary::-webkit-details-marker{display:none}details.card summary::
  <details><summary>Enregistrer un trade</summary><div class="bd">
   <p>Seuls l’<b>actif</b> et la <b>date</b> sont obligatoires. Le reste est facultatif : remplis ce qui t’est utile.</p>
   <p><b>Trade ouvert ou clôturé.</b> Un trade sans P&amp;L est « ouvert ». Tu peux le noter à l’entrée et le clôturer des jours plus tard : touche-le dans l’onglet Trades, puis remplis le prix de sortie et le P&amp;L net. Un trade ouvert ne compte pas dans le solde ni dans les statistiques.</p>
+  <p><b>Date de sortie.</b> Quand tu saisis le P&amp;L, la date et l’heure de sortie se remplissent seules (tu peux les corriger). L’argent est compté à la <b>date de clôture</b>, alors que l’analyse de tes entrées (jour, heure, timeframe) reste basée sur la <b>date d’entrée</b>. Dans le calendrier, un point ambre signale un trade ouvert ce jour-là, et toucher un jour affiche ses trades. Les trades saisis avant cette fonction restent comptés à leur date d’entrée.</p>
   <p><b>P&amp;L net.</b> Recopie le résultat net affiché par ta plateforme : gain en positif, perte avec un signe moins (par exemple −25,5). L’app ne le calcule pas, car la valeur d’un point change selon l’actif et le courtier.</p>
   <p><b>Trade non pris.</b> Choisis « Non pris » pour noter un setup que tu as laissé passer, avec la raison. Il n’entre ni dans le solde ni dans les résultats, mais il apparaît dans Analyse &gt; Discipline.</p>
   <p><b>Modifier ou supprimer.</b> Touche un trade dans la liste. Le bouton rouge « Supprimer ce trade » est tout en bas de la fiche.</p></div></details>
@@ -131,7 +133,7 @@ details.card summary::-webkit-details-marker{display:none}details.card summary::
   <p><b>Psychologie.</b> Ton état avant, ton émotion pendant et ton état d’esprit après. Analyse &gt; Émotions montre ce que chacun te coûte ou te rapporte.</p>
   <p><b>Analyse à froid.</b> À remplir plus tard, en rouvrant le trade : setup respecté, erreur principale, point positif, leçon.</p></div></details>
  <details><summary>Analyse et captures</summary><div class="bd">
-  <p>L’onglet <b>Analyse</b> propose le calendrier (un mois, chaque jour coloré selon le résultat), puis les résultats par actif, stratégie, timeframe, jour et heure, la discipline et les émotions.</p>
+  <p>L’onglet <b>Analyse</b> propose le calendrier (un mois, chaque jour coloré selon le résultat), puis les résultats par actif, stratégie, timeframe, jour et heure, la durée des trades, la discipline et les émotions.</p>
   <p>Ces statistiques ne deviennent fiables qu’à partir d’une trentaine de trades : avec 1 ou 2 trades par groupe, les pourcentages ne disent pas grand-chose.</p>
   <p><b>Captures d’écran.</b> Ajoute une image avant et une après le trade. Touche une miniature pour l’agrandir, ✕ pour la retirer. Elles sont incluses dans les sauvegardes.</p></div></details>
  <details><summary>Comptes</summary><div class="bd">
@@ -204,6 +206,8 @@ details.card summary::-webkit-details-marker{display:none}details.card summary::
    <label class="full">Type de sortie<select id="f_rt"><option value="">–</option><option>TP</option><option>SL</option><option>BE</option></select></label>
    <label>Frais<input id="fees" type="number" step="any"></label>
    <label>P&amp;L net<input id="pnl" type="number" step="any" placeholder="vide = ouvert"></label>
+   <label class="full">Date et heure de sortie<input id="dtx" type="datetime-local"></label>
+   <div class="full lbl">Se remplit seule quand tu saisis le P&amp;L (tu peux la corriger).</div>
   </div>
   <div class="card g" id="shots"><h2 class="full">Captures d’écran</h2>
    <div class="shot" data-s="b"><span>Avant le trade</span><div class="ph"><input type="file" accept="image/*" hidden><div class="pv"></div></div></div>
@@ -227,7 +231,7 @@ details.card summary::-webkit-details-marker{display:none}details.card summary::
 </section>
 
 <section id="an"><h1 class="t">Analyse</h1>
- <div class="chips sc" id="acat"><button data-c="cal" class="on">Calendrier</button><button data-c="sym">Actifs</button><button data-c="strat">Stratégies</button><button data-c="dow">Jours</button><button data-c="hour">Heures</button><button data-c="disc">Discipline</button><button data-c="emo">Émotions</button></div>
+ <div class="chips sc" id="acat"><button data-c="cal" class="on">Calendrier</button><button data-c="sym">Actifs</button><button data-c="strat">Stratégies</button><button data-c="dow">Jours</button><button data-c="hour">Heures</button><button data-c="dur">Durée</button><button data-c="disc">Discipline</button><button data-c="emo">Émotions</button></div>
  <div id="acont"></div></section>
 
 <section id="more" class="set">
@@ -316,9 +320,9 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hid=Date.no
 
 /* ---------- Statistiques ---------- */
 function stats(days){
- const a=cur(),all=rows().filter(t=>typeof t.pnl==='number').sort((p,q)=>p.dt.localeCompare(q.dt)),
+ const a=cur(),all=rows().filter(t=>typeof t.pnl==='number').sort((p,q)=>cd(p).localeCompare(cd(q))),
   lim=days?new Date(Date.now()-days*864e5-tz()).toISOString().slice(0,16):'',
-  bal=a.initial+all.reduce((s,t)=>s+t.pnl,0),cl=all.filter(t=>t.dt>=lim),base=a.initial+all.filter(t=>t.dt<lim).reduce((s,t)=>s+t.pnl,0);
+  bal=a.initial+all.reduce((s,t)=>s+t.pnl,0),cl=all.filter(t=>cd(t)>=lim),base=a.initial+all.filter(t=>cd(t)<lim).reduce((s,t)=>s+t.pnl,0);
  let eq=base,peak=eq,mdd=0,mddp=0,ws=0,ls=0,bw=0,bl=0;const pts=[eq];
  cl.forEach(t=>{eq+=t.pnl;pts.push(eq);if(eq>peak)peak=eq;const d=peak-eq;if(d>mdd){mdd=d;mddp=peak?d/peak*100:0}
   if(t.pnl>0){ws++;ls=0;bw=Math.max(bw,ws)}else if(t.pnl<0){ls++;ws=0;bl=Math.max(bl,ls)}else{ws=0;ls=0}});
@@ -351,38 +355,52 @@ function renderDash(){
 function renderList(){
  const f=$('#fsym').value,syms=[...new Set(rows().map(t=>t.sym))].sort();
  $('#fsym').innerHTML='<option value="">Tous les actifs</option>'+syms.map(s=>`<option ${s===f?'selected':''}>${esc(s)}</option>`).join('');
- const L=rows().filter(t=>!f||t.sym===f).sort((p,q)=>q.dt.localeCompare(p.dt));let out='',d0='';
- L.forEach(t=>{const d=t.dt.slice(0,10),r=rMult(t),b=t.side==='BUY',np=t.taken===false,rp=rPlan(t);
-  if(d!==d0){d0=d;const day=L.filter(x=>x.dt.slice(0,10)===d&&typeof x.pnl==='number').reduce((s,x)=>s+x.pnl,0);
+ const L=rows().filter(t=>!f||t.sym===f).sort((p,q)=>sk(q).localeCompare(sk(p)));let out='',d0='';
+ L.forEach(t=>{const d=gk(t),r=rMult(t),b=t.side==='BUY',np=t.taken===false,rp=rPlan(t);
+  if(d!==d0){d0=d;const day=L.filter(x=>gk(x)===d&&typeof x.pnl==='number').reduce((s,x)=>s+x.pnl,0);
    out+=`<div class="dh"><span>${new Date(d+'T12:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</span><b class="num ${cls(day)}">${money(day)}</b></div>`}
-  out+=`<div class="row" data-id="${t.id}"><div class="av ${np?'':b?'up':'dn'}">${np?'⊘':b?'↗':'↘'}</div><div class="m"><b>${esc(t.sym)}</b><small>${esc(t.dt.slice(11))}${t.strat?' · '+esc(t.strat):''}${t.ib||t.ia?' · 📷':''}</small></div>
+  out+=`<div class="row" data-id="${t.id}"><div class="av ${np?'':b?'up':'dn'}">${np?'⊘':b?'↗':'↘'}</div><div class="m"><b>${esc(t.sym)}</b><small>${d!==t.dt.slice(0,10)?t.dt.slice(8,10)+'/'+t.dt.slice(5,7)+' ':''}${esc(t.dt.slice(11))}${durMs(t)!=null?' · '+fmtDur(durMs(t)):''}${typeof t.pnl!=='number'&&t.taken!==false?' · ouvert depuis '+fmtDur(Math.max(0,Date.now()-new Date(t.dt))):''}${t.strat?' · '+esc(t.strat):''}${t.ib||t.ia?' · 📷':''}</small></div>
   <div class="r num">${np?`<b style="color:var(--acc)">Non pris</b><small>${esc(t.why||'')}</small>`:`<b class="${cls(t.pnl)}">${typeof t.pnl==='number'?money(t.pnl):'ouvert'}</b><small>${r==null?'':r.toFixed(2)+' R'}${rp==null?'':(r==null?'':' · ')+'prévu '+rp.toFixed(1)}</small>`}</div></div>`});
  $('#rows').innerHTML=out||'<p class="empty">Aucun trade pour l’instant.<br>Touche « Ajouter » pour saisir le premier.</p>'}
 
+const cd=t=>t.dx||t.dt,sk=t=>typeof t.pnl==='number'?cd(t):t.dt,gk=t=>sk(t).slice(0,10),nowL=()=>new Date(Date.now()-tz()).toISOString().slice(0,16),
+ ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),
+ durMs=t=>t.dx&&t.dt?new Date(t.dx)-new Date(t.dt):null,fdt=x=>x.slice(8,10)+'/'+x.slice(5,7)+' '+x.slice(11),
+ DURL=['Moins de 15 min','15 min à 1 h','1 à 4 h','4 à 24 h','1 à 3 jours','Plus de 3 jours'];
+function fmtDur(ms){const m=Math.round(ms/6e4);if(m<60)return m+' min';const h=Math.floor(m/60),r=m%60;if(h<24)return h+' h'+(r?' '+String(r).padStart(2,'0'):'');const d=Math.floor(h/24),hh=h%24;return d+' j'+(hh?' '+hh+' h':'')}
+function durB(t){const d=durMs(t);if(d==null||d<0)return null;const m=d/6e4;return m<15?DURL[0]:m<60?DURL[1]:m<240?DURL[2]:m<1440?DURL[3]:m<4320?DURL[4]:DURL[5]}
+function spanDays(a,b,incl){const o=[];for(let d=new Date(a+'T12:00'),e=new Date(b+'T12:00');incl?d<=e:d<e;d.setDate(d.getDate()+1))o.push(ymd(d));return o}
+function showDay(d){const L=rows().filter(t=>t.taken!==false),td=ymd(new Date()),
+ cl=L.filter(t=>typeof t.pnl==='number'&&cd(t).slice(0,10)===d),
+ op=L.filter(t=>{const e=t.dt.slice(0,10);return typeof t.pnl==='number'?e<=d&&d<cd(t).slice(0,10):e<=d&&d<=td}),
+ mini=(t,lab,o)=>`<div class="row" data-id="${t.id}"><div class="av ${t.side==='BUY'?'up':'dn'}">${t.side==='BUY'?'↗':'↘'}</div><div class="m"><b>${esc(t.sym)}</b><small>${lab}</small></div><div class="r num"><b class="${o?'':cls(t.pnl)}">${o?'en cours':money(t.pnl)}</b></div></div>`;
+ $('#dayd').innerHTML=`<h2 class="sec" style="margin-top:16px">${new Date(d+'T12:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}${cl.length?' · '+money(sum(cl.map(t=>t.pnl))):''}</h2>`+
+  (cl.length||op.length?cl.map(t=>mini(t,'Clôturé · entrée '+fdt(t.dt)+(durMs(t)!=null?' · '+fmtDur(durMs(t)):''),0)).join('')+op.map(t=>mini(t,'Ouvert depuis '+fdt(t.dt),1)).join(''):'<p class="empty" style="padding:14px">Aucun trade ce jour-là.</p>')}
 const DOW=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'],sum=a=>a.reduce((x,y)=>x+y,0);
 let acat='cal',cm=new Date();cm.setDate(1);
 const closed=()=>rows().filter(t=>typeof t.pnl==='number');
 const cmp=v=>{const a=Math.abs(v);return(v>0?'+':v<0?'−':'')+(a>=1000?(a/1000).toFixed(1)+'k':a<10?a.toFixed(1):Math.round(a))};
 function renderCal(){
- const y=cm.getFullYear(),m=cm.getMonth(),n=new Date(y,m+1,0).getDate(),first=(new Date(y,m,1).getDay()+6)%7,by={},
+ const y=cm.getFullYear(),m=cm.getMonth(),n=new Date(y,m+1,0).getDate(),first=(new Date(y,m,1).getDay()+6)%7,by={},cnt={},op={},
   key=d=>y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),
   tile=(l,v,c='')=>`<div class="tile"><span>${l}</span><b class="num ${c}">${v}</b></div>`;
- closed().forEach(t=>{const d=t.dt.slice(0,10);by[d]=(by[d]||0)+t.pnl});
+ closed().forEach(t=>{const d=cd(t).slice(0,10);by[d]=(by[d]||0)+t.pnl;cnt[d]=(cnt[d]||0)+1;spanDays(t.dt.slice(0,10),d,false).forEach(x=>op[x]=1)});
+ rows().filter(t=>typeof t.pnl!=='number'&&t.taken!==false).forEach(t=>spanDays(t.dt.slice(0,10),ymd(new Date()),true).forEach(x=>op[x]=1));
  let mx=0,tot=0,w=0,l=0;for(let d=1;d<=n;d++){const v=by[key(d)];if(v!=null){mx=Math.max(mx,Math.abs(v));tot+=v;if(v>0)w++;else if(v<0)l++}}
  let g='';['L','M','M','J','V','S','D'].forEach(x=>g+=`<b class="wd">${x}</b>`);
  for(let i=0;i<first;i++)g+='<span></span>';
  for(let d=1;d<=n;d++){const v=by[key(d)],a=v==null?0:(mx?.14+.4*Math.abs(v)/mx:.14);
-  g+=`<div class="cd"${v==null?'':` style="background:rgba(${v>=0?'22,199,132':'234,57,67'},${a.toFixed(2)})"`}><span>${d}</span>${v==null?'':`<em class="num">${cmp(v)}</em>`}</div>`}
+  g+=`<div class="cd" data-d="${key(d)}"${v==null?'':` style="background:rgba(${v>=0?'22,199,132':'234,57,67'},${a.toFixed(2)})"`}><span>${d}${cnt[key(d)]>1?'<small>×'+cnt[key(d)]+'</small>':''}${op[key(d)]?'<i class="od"></i>':''}</span>${v==null?'':`<em class="num">${cmp(v)}</em>`}</div>`}
  $('#acont').innerHTML=`<div class="mh"><button data-mv="-1">‹</button><span>${cm.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</span><button data-mv="1">›</button></div>
-  <div class="tiles">${tile('P&amp;L du mois',money(tot),cls(tot))+tile('Jours gagnants',w,'up')+tile('Jours perdants',l,'dn')}</div><div class="cal">${g}</div>`}
+  <div class="tiles">${tile('P&amp;L du mois',money(tot),cls(tot))+tile('Jours gagnants',w,'up')+tile('Jours perdants',l,'dn')}</div><div class="cal">${g}</div><p class="lbl" style="margin-top:10px"><i class="od" style="margin:0 4px 0 0"></i>trade ouvert ce jour-là · touche un jour pour voir ses trades</p><div id="dayd"></div>`}
 function renderAn(){
  document.querySelectorAll('#acat button').forEach(b=>b.classList.toggle('on',b.dataset.c===acat));
  if(acat==='cal')return renderCal();if(acat==='disc')return renderDisc();if(acat==='emo')return renderEmo();
- const kf={sym:t=>t.sym,strat:t=>t.strat||'Sans stratégie',dow:t=>DOW[(new Date(t.dt.slice(0,10)+'T12:00').getDay()+6)%7],hour:t=>t.dt.slice(11,13)+' h'}[acat],mp={};
- closed().forEach(t=>{const k=kf(t);(mp[k]=mp[k]||[]).push(t.pnl)});
+ const kf={sym:t=>t.sym,strat:t=>t.strat||'Sans stratégie',dow:t=>DOW[(new Date(t.dt.slice(0,10)+'T12:00').getDay()+6)%7],hour:t=>t.dt.slice(11,13)+' h',dur:durB}[acat],mp={};
+ closed().forEach(t=>{const k=kf(t);if(k==null)return;(mp[k]=mp[k]||[]).push(t.pnl)});
  const L=Object.entries(mp).map(([k,a])=>{const gw=sum(a.filter(x=>x>0)),gl=-sum(a.filter(x=>x<0)),p=sum(a);
   return{k,n:a.length,p,wr:a.filter(x=>x>0).length/a.length*100,pf:gl?gw/gl:(gw?Infinity:0),ex:p/a.length}});
- if(acat==='dow')L.sort((a,b)=>DOW.indexOf(a.k)-DOW.indexOf(b.k));else if(acat==='hour')L.sort((a,b)=>a.k.localeCompare(b.k));else L.sort((a,b)=>b.p-a.p);
+ if(acat==='dow')L.sort((a,b)=>DOW.indexOf(a.k)-DOW.indexOf(b.k));else if(acat==='hour')L.sort((a,b)=>a.k.localeCompare(b.k));else if(acat==='dur')L.sort((a,b)=>DURL.indexOf(a.k)-DURL.indexOf(b.k));else L.sort((a,b)=>b.p-a.p);
  const mx=Math.max(...L.map(x=>Math.abs(x.p)),0)||1;
  $('#acont').innerHTML=L.length?L.map(x=>`<div class="gc"><div class="top"><b>${esc(x.k)}</b><b class="num ${cls(x.p)}">${money(x.p)}</b></div>
   <small>${x.n} trade${x.n>1?'s':''} · ${x.wr.toFixed(0)} % réussite · PF ${x.pf===Infinity?'∞':x.pf.toFixed(2)} · espérance ${money(x.ex)}</small>
@@ -440,7 +458,7 @@ function setSide(v){$('#seg').dataset.v=v;document.querySelectorAll('#seg button
 function setEmo(v){$('#emos').dataset.v=v||'';document.querySelectorAll('#emos button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
 function openForm(t){
  editId=t?t.id:null;$('#f').reset();pend={b:null,a:null};chg={};drawShots();FIELDS.forEach(k=>$('#f_'+k).value=t?(t[k]||''):'');setTk(t&&t.taken===false?'0':'1');drawCk(t);if(t)['b','a'].forEach(k=>{if(t['i'+k])imgGet(t.id+k).then(v=>{if(!chg[k]){pend[k]=v||null;drawShots()}}).catch(()=>{})});$('#ftitle').textContent=t?'Modifier le trade':'Nouveau trade';
- $('#dt').value=t?t.dt:new Date(Date.now()-tz()).toISOString().slice(0,16);setSide(t?t.side:'BUY');setEmo(t?t.emo:'');
+ $('#dt').value=t?t.dt:new Date(Date.now()-tz()).toISOString().slice(0,16);$('#dtx').value=t&&t.dx||'';setSide(t?t.side:'BUY');setEmo(t?t.emo:'');
  if(t){$('#sym').value=t.sym;['lot','entry','exit','sl','tp','fees','pnl'].forEach(k=>$('#'+k).value=t[k]==null?'':t[k]);$('#strat').value=t.strat||'';$('#notes').value=t.notes||''}
  $('#del').hidden=!t;
  $('#syms').innerHTML=[...new Set(['EURUSD','GBPUSD','XAUUSD','BTCUSD',...db.trades.map(x=>x.sym)])].map(s=>`<option value="${esc(s)}">`).join('')}
@@ -455,7 +473,8 @@ $('#emos').innerHTML=EMO.map(e=>`<button type="button" data-v="${e}">${e}</butto
 $('#emos').onclick=e=>{const b=e.target.closest('button');if(b)setEmo($('#emos').dataset.v===b.dataset.v?'':b.dataset.v)};
 $('#seg').onclick=e=>{const b=e.target.closest('button');if(b)setSide(b.dataset.v)};
 $('#acat').onclick=e=>{const b=e.target.closest('button');if(b){acat=b.dataset.c;renderAn()}};
-$('#acont').onclick=e=>{const b=e.target.closest('[data-mv]');if(b){cm.setMonth(cm.getMonth()+ +b.dataset.mv);renderCal()}};
+$('#acont').onclick=e=>{const b=e.target.closest('[data-mv]');if(b){cm.setMonth(cm.getMonth()+ +b.dataset.mv);return renderCal()}
+ const c=e.target.closest('[data-d]');if(c)return showDay(c.dataset.d);const r=e.target.closest('.row[data-id]');if(r){openForm(db.trades.find(x=>x.id===+r.dataset.id));go('form')}};
 $('#per').onclick=e=>{const b=e.target.closest('button');if(b){per=+b.dataset.p;renderDash()}};
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.t==='form')editId=null;go(b.dataset.t)});
 $('#acc').onchange=e=>{db.acc=+e.target.value;save();refresh()};
@@ -474,9 +493,13 @@ $('#f').onsubmit=async e=>{e.preventDefault();
  if(!t.sym||!t.dt)return;
  FIELDS.forEach(k=>t[k]=$('#f_'+k).value);t.ck=[...document.querySelectorAll('#ckl input:checked')].map(x=>CK()[+x.dataset.i]);t.taken=$('#tk').dataset.v!=='0';
  if(!t.taken){t.pnl=undefined;t.exit=undefined;t.fees=undefined}
+ const old0=editId&&db.trades.find(x=>x.id===editId)||null;t.dx=$('#dtx').value||undefined;
+ if(typeof t.pnl!=='number')t.dx=undefined;else if(!t.dx)t.dx=old0&&typeof old0.pnl==='number'?old0.dx:old0?nowL():t.dt;
+ if(t.dx&&t.dx<t.dt){alert('La date de sortie ne peut pas être avant l’entrée.');return}
  const old=editId&&db.trades.find(x=>x.id===editId)||{};t.ib=!!old.ib;t.ia=!!old.ia;
  for(const k of['b','a'])if(chg[k]){try{if(pend[k]){await imgPut(t.id+k,pend[k]);t['i'+k]=true}else{await imgDel(t.id+k);t['i'+k]=false}}catch(x){alert('Une capture n’a pas pu être enregistrée (stockage plein ?).')}}
  db.trades=editId?db.trades.map(x=>x.id===editId?t:x):[...db.trades,t];save();editId=null;go('list')};
+$('#pnl').oninput=()=>{if($('#dtx').value||isNaN(parseFloat($('#pnl').value)))return;const o=editId&&db.trades.find(x=>x.id===editId);if(o&&typeof o.pnl==='number')return;$('#dtx').value=o?nowL():$('#dt').value};
 $('#del').onclick=()=>{if(!confirm('Supprimer ce trade ?'))return;['b','a'].forEach(k=>imgDel(editId+k).catch(()=>{}));db.trades=db.trades.filter(x=>x.id!==editId);save();editId=null;go('list')};
 $('#lockNow').onclick=()=>showLock();
 $('#chpin').onclick=()=>showLock('old');
@@ -484,9 +507,9 @@ $('#chid').onclick=()=>{const v=(prompt('Nouvel identifiant ?',A().id)||'').trim
 
 function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
 $('#csv').onclick=()=>{const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
- const h=['date','compte','actif','timeframe','sens','pris','lot','entree','sortie','sl','tp','frais','pnl','type_sortie','r_reel','r_prevu','verdict','checklist','protocole','hesitation','pourquoi_non_pris','etat_avant','etat_pendant','etat_apres','setup_respecte','erreur','point_positif','lecon','strategie','notes'];
+ const h=['date','compte','actif','timeframe','sens','pris','lot','entree','sortie','sl','tp','frais','pnl','type_sortie','r_reel','r_prevu','verdict','checklist','protocole','hesitation','pourquoi_non_pris','etat_avant','etat_pendant','etat_apres','setup_respecte','erreur','point_positif','lecon','strategie','notes','date_sortie','duree_min'];
  const L=db.trades.slice().sort((a,b)=>a.dt.localeCompare(b.dt)).map(t=>{const r=rMult(t),rp=rPlan(t),a=db.accounts.find(x=>x.id===t.acc);
-  return[t.dt,a?a.name:'',t.sym,t.tf,t.side,t.taken===false?'non':'oui',t.lot,t.entry,t.exit,t.sl,t.tp,t.fees,t.pnl,t.rt,r==null?'':r.toFixed(3),rp==null?'':rp.toFixed(3),t.valid,(t.ck||[]).join(' | '),t.p10,t.hes,t.why,t.eb,t.emo,t.ea,t.sr,t.err,t.pos,t.les,t.strat,t.notes].map(q).join(',')});
+  return[t.dt,a?a.name:'',t.sym,t.tf,t.side,t.taken===false?'non':'oui',t.lot,t.entry,t.exit,t.sl,t.tp,t.fees,t.pnl,t.rt,r==null?'':r.toFixed(3),rp==null?'':rp.toFixed(3),t.valid,(t.ck||[]).join(' | '),t.p10,t.hes,t.why,t.eb,t.emo,t.ea,t.sr,t.err,t.pos,t.les,t.strat,t.notes,t.dx,durMs(t)==null?'':Math.round(durMs(t)/6e4)].map(q).join(',')});
  dl('trades.csv','\ufeff'+[h.join(',')].concat(L).join('\n'),'text/csv')};
 const bkDays=()=>{const t=+localStorage.getItem('tj_bk');return t?Math.floor((Date.now()-t)/864e5):null};
 async function doBackup(){const imgs={};
